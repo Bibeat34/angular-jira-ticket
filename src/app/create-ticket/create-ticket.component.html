@@ -1,0 +1,6 @@
+<h1>Créer un ticket Jira</h1>
+<form (ngSubmit)="onSubmit()">
+  <input [(ngModel)]="summary" name="summary" placeholder="Résumé">
+  <textarea [(ngModel)]="description" name="description" placeholder="Description"></textarea>
+  <button type="submit">Créer le ticket</button>
+</form>
