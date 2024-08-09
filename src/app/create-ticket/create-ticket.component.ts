@@ -12,8 +12,10 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./create-ticket.component.scss']
 })
 export class CreateIssueComponent {
-  summary: string = 'Résumé du ticket';
+  summary: string = 'Objet du ticket';
   description: string = 'Description du ticket';
+  name: string = 'Yves'
+  mail: string = "pseudo@mail.com"
 
   constructor(private jiraService: JiraService) { }
 
@@ -33,7 +35,7 @@ export class CreateIssueComponent {
               content: [
                 {
                   type: "text",
-                  text: this.description
+                  text: `Nom: ${this.name}\nMail: ${this.mail}\n\nMessage:\n ${this.description}`
                 }
               ]
             }

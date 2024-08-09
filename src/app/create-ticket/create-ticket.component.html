@@ -1,6 +1,48 @@
 <h1>Créer un ticket Jira</h1>
 <form (ngSubmit)="onSubmit()">
-  <input [(ngModel)]="summary" name="summary" placeholder="Résumé">
-  <textarea [(ngModel)]="description" name="description" placeholder="Description"></textarea>
+  <div>
+    <label for="name">Nom: </label>
+    <input 
+      type="text" 
+      id="name" 
+      [(ngModel)]="name" 
+      name="name" 
+      required>
+  </div>
+
+  <div>
+    <label for="mail">Email: </label>
+    <input 
+      type="email" 
+      id="mail" 
+      [(ngModel)]="mail" 
+      name="mail" 
+      required>
+  </div>
+  <br>
+  
+  <div>
+    <label for="summary">Objet: </label>
+    <input 
+      type="text" 
+      id="summary" 
+      [(ngModel)]="summary" 
+      name="summary" 
+      required>
+  </div> 
+  
+
+  <div>
+    <label for="description">Description:</label>
+    <br>
+    <textarea 
+      id="description" 
+      [(ngModel)]="description" 
+      name="description" 
+      rows="5" 
+      required>
+    </textarea>
+  </div>
+
   <button type="submit">Créer le ticket</button>
 </form>
