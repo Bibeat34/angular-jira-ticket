@@ -8,7 +8,7 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class JiraService {
   private apiUrl = '/jira-api/rest/api/3';
-  private authToken = 'your@mail.com:jiraKey';
+  private authToken = 'your@mail.com:JiraToken';
 
   constructor(private http: HttpClient) { }
 

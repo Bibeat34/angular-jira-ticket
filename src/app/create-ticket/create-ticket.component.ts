@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-create-ticket',
   standalone: true,
   imports: [
-    FormsModule, 
+    FormsModule,    
   ],
   templateUrl: './create-ticket.component.html',
   styleUrls: ['./create-ticket.component.scss']
@@ -14,17 +14,21 @@ import { FormsModule } from '@angular/forms';
 export class CreateIssueComponent {
   summary: string = 'Objet du ticket';
   description: string = 'Description du ticket';
-  name: string = 'Yves'
-  mail: string = "pseudo@mail.com"
+  name: string = 'Yves';
+  surname: string = "Rocher";
+  mail: string = "pseudo@mail.com";
 
   constructor(private jiraService: JiraService) { }
 
   onSubmit() {
+    this.name += " " + this.surname;
     const issueData = {
       fields: {
         project: {
           key: "MT"
         },
+        customfield_10067: this.name,
+        customfield_10066: this.mail,
         summary: this.summary,
         description: {
           type: "doc",
@@ -35,7 +39,7 @@ export class CreateIssueComponent {
               content: [
                 {
                   type: "text",
-                  text: `Nom: ${this.name}\nMail: ${this.mail}\n\nMessage:\n ${this.description}`
+                  text: this.description,
                 }
               ]
             }
