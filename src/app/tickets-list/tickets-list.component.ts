@@ -73,13 +73,8 @@ export class TicketsListComponent implements OnInit {
           valueB = b.fields.summary;
           break; */
         case 'reporter':
-
-          let afieldUpperCase: string = a.fields.customfield_10067;
-          let bfieldUpperCase: string = b.fields.customfield_10067;
-          bfieldUpperCase.toUpperCase();
-          afieldUpperCase.toUpperCase();
-          valueA = afieldUpperCase;
-          valueB = bfieldUpperCase;
+          valueA = (a.fields.customfield_10067 || '').toUpperCase();
+          valueB = (b.fields.customfield_10067 || '').toUpperCase();
           break;
         case 'status':
           valueA = a.fields.status.name;
