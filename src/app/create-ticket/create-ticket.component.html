@@ -1,23 +1,4 @@
-<h1>Créer un ticket Jira</h1>
-<!--<form (ngSubmit)="onSubmit()">
-  <label for="summary">Résumé:</label>
-  <input id="summary" [(ngModel)]="summary" name="summary">
-
-  <label for="description">Description:</label>
-  <textarea id="description" [(ngModel)]="description" name="description"></textarea>
-
-  <label for="name">Prénom:</label>
-  <input id="name" [(ngModel)]="name" name="name">
-
-  <label for="surname">Nom:</label>
-  <input id="surname" [(ngModel)]="surname" name="surname">
-
-  <label for="mail">Email:</label>
-  <input id="mail" [(ngModel)]="mail" name="mail" type="email">
-
-  <button type="submit">Créer un ticket</button>
-</form>--> 
-
+<h1>Créer un ticket</h1>
 
 <form (ngSubmit)="onSubmit()">
   <div>
@@ -64,7 +45,6 @@
 
   <div>
     <label for="description">Description:</label>
-    <br>
     <textarea 
       id="description" 
       [(ngModel)]="description" 
@@ -76,3 +56,5 @@
 
   <button type="submit">Créer le ticket</button>
 </form>
+<br><br><br>
+<button routerLink="">Revenir au menu</button>

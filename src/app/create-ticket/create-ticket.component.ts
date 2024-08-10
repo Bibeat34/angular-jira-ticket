@@ -1,17 +1,20 @@
 import { Component } from '@angular/core';
 import { JiraService } from '../services/jira.service';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../environments/environment';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-create-ticket',
   standalone: true,
   imports: [
-    FormsModule,    
+    FormsModule,
+    RouterLink,    
   ],
   templateUrl: './create-ticket.component.html',
   styleUrls: ['./create-ticket.component.scss']
 })
-export class CreateIssueComponent {
+export class CreateTicketComponent {
   summary: string = 'Objet du ticket';
   description: string = 'Description du ticket';
   name: string = 'Yves';
@@ -25,7 +28,7 @@ export class CreateIssueComponent {
     const issueData = {
       fields: {
         project: {
-          key: "MT"
+          key: environment.jiraProjectKey
         },
         customfield_10067: this.name,
         customfield_10066: this.mail,

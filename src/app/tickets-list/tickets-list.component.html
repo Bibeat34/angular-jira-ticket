@@ -1,0 +1,37 @@
+<h2>Liste des tickets:</h2>
+<button routerLink="">Revenir au menu</button>
+
+    @if (loading) {
+      <p>Loading...</p>
+    } @else if (error) {
+      <p>Error: {{ error }}</p>
+    } @else {
+        <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Résumé</th>
+                <th (click)="sortBy('reporter')" [class.sorted]="sortColumn === 'reporter'">
+                    Reporter <span *ngIf="sortColumn === 'reporter'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </th>
+                <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
+                    Status <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </th>
+                <th (click)="sortBy('created')" [class.sorted]="sortColumn === 'created'">
+                    Date de création <span *ngIf="sortColumn === 'created'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </th>
+            </thead>
+            <tbody>
+              @for (issue of sortedIssues; track issue.key) {
+                <tr (click)="showTicket(issue.key)" class="clickable-row">
+                  <td>{{ issue.key }}</td>
+                  <td>{{ issue.fields.summary }}</td>
+                  <td>{{ issue.fields.customfield_10067 }}</td>
+                  <td>{{ issue.fields.status.name }}</td>
+                  <td>{{ formatDate(issue.fields.created) }}</td>                  
+                </tr>
+              }
+            </tbody>
+          </table>
+    }
+    

@@ -1,15 +1,25 @@
 import { Routes } from '@angular/router';
-import { CreateIssueComponent } from './create-ticket/create-ticket.component';
-import { LoginComponent } from './login/login.component';
+import { CreateTicketComponent } from './create-ticket/create-ticket.component';
+import { LandingPageComponent } from './landing-page/landing-page.component';
+import { TicketsListComponent } from './tickets-list/tickets-list.component';
+import { ShowTicketComponent } from './show-ticket/show-ticket.component';
 
 export const routes: Routes = [
     {
       path: '',
-      component: LoginComponent // La page d'accueil redirige vers le LoginComponent
+      component: LandingPageComponent 
     },
     {
       path: 'create-ticket',
-      component: CreateIssueComponent // Le chemin /create-ticket charge CreateTicketComponent
+      component: CreateTicketComponent 
+    },
+    {
+      path: 'ticket-list',
+      component: TicketsListComponent
+    },
+    {
+      path: 'ticket-list/:id',
+      component: ShowTicketComponent
     },
     {
       path: '**',

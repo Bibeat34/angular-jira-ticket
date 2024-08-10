@@ -1,0 +1,12 @@
+<div *ngIf="loading" class="loading">Loading...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="!loading && !error && ticket" class="ticket-details">
+  <h2>{{ ticket.fields.summary }}</h2>
+  <p><strong>Reporter:</strong> {{ ticket.fields.customfield_10067 }}</p>
+  <p><strong>Created:</strong> {{ formatDate(ticket.fields.created) }}</p>
+  <p><strong>Status:</strong> {{ ticket.fields.status.name }}</p>
+  <p><strong>Priority:</strong> {{ ticket.fields.priority.name }}</p>  
+  <p><strong>Description:</strong></p>
+  <div class="description" [innerHTML]="getDescription()"></div>
+</div>
+<button routerLink="/ticket-list" class="back-button">Revenir à la liste</button>
