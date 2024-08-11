@@ -1,17 +1,19 @@
 <div *ngIf="loading" class="loading">Loading...</div>
 <div *ngIf="error" class="error">{{ error }}</div>
 <div *ngIf="!loading && !error && ticket" class="ticket-details">
-  <h2>{{ ticket.fields.summary }}</h2>
-  <p><strong>Reporter:</strong> {{ ticket.fields.customfield_10067 }}</p>
-  <p><strong>Created:</strong> {{ formatDate(ticket.fields.created) }}</p>
-  <p><strong>Status:</strong> {{ ticket.fields.status?.name }}</p>
-  <p><strong>Priority:</strong> {{ ticket.fields.priority?.name }}</p>  
-  <p><strong>Description:</strong></p>
-  <div class="description" [innerHTML]="getDescription()"></div>
+  <div class="ticket-details-section">
+    <h2>{{ ticket.fields.summary }}</h2>
+    <p><strong>Reporter:</strong> {{ ticket.fields.customfield_10067 }}</p>
+    <p><strong>Created:</strong> {{ formatDate(ticket.fields.created) }}</p>
+    <p><strong>Status:</strong> {{ ticket.fields.status?.name }}</p>
+    <p><strong>Priority:</strong> {{ ticket.fields.priority?.name }}</p>  
+    <p><strong>Description:</strong></p>
+    <div class="description" [innerHTML]="getDescription()"></div>
+  </div>
 
-  <div *ngIf="ticket.fields.comment?.total > 0"  class="comments-section">
-    <h3>Commentaires: </h3>
-    <ul class="comment-list">
+  <div class="comments-section">
+    <h3>Commentaires:</h3>
+    <ul class="comment-list" *ngIf="ticket.fields.comment?.total > 0">
       <li *ngFor="let comment of ticket.fields.comment?.comments" class="comment">
         <p class="comment-meta">
           <strong>{{ comment.author?.displayName || 'Chargement...' }}</strong> - {{ formatDate(comment.created) }}
@@ -19,14 +21,14 @@
         <div class="comment-body" [innerHTML]="getCommentBody(comment)"></div>
       </li>
     </ul>
-  </div>
 
-  <div class="add-comment-section">
-    <h3>Ajouter commentaire</h3>
-    <textarea [(ngModel)]="newComment" rows="4" cols="50" placeholder="Votre commentaire"></textarea>
-    <button (click)="addComment()" [disabled]="addingComment" class="add-comment-button">
-      {{ addingComment ? 'Adding...' : 'Ajouter' }}
-    </button>
+    <div class="add-comment-section">
+      <h4>Ajouter commentaire</h4>
+      <textarea [(ngModel)]="newComment" rows="4" placeholder="Votre commentaire"></textarea>
+      <button (click)="addComment()" [disabled]="addingComment" class="add-comment-button">
+        {{ addingComment ? 'Adding...' : 'Ajouter' }}
+      </button>
+    </div>
   </div>
 </div>
 <button routerLink="/ticket-list" class="back-button">Revenir à la liste</button>
