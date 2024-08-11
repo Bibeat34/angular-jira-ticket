@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { JiraService } from '../services/jira.service';
 import { environment } from '../environments/environment';
 import { RouterLink, Router } from '@angular/router';
+import { FormsModule, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-tickets-list',
@@ -10,6 +11,7 @@ import { RouterLink, Router } from '@angular/router';
   imports: [
     NgClass,
     NgIf,
+    FormsModule,
     RouterLink,
   ],
   templateUrl: './tickets-list.component.html',
@@ -22,6 +24,7 @@ export class TicketsListComponent implements OnInit {
   error: string | null = null;
   sortColumn: string | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
+  sortEtat: 'Terminé(e)' | 'À faire' | 'Revue en cours' = 'Terminé(e)'; 
 
   constructor(
     private jiraService: JiraService,
@@ -36,6 +39,7 @@ export class TicketsListComponent implements OnInit {
     this.jiraService.getIssues(environment.jiraProjectKey).subscribe({
       next: (data) => {
         this.issues = data.issues;
+        console.log(this.issues[1].fields.status.name);
         this.sortedIssues = [...this.issues];
         this.sortBy('reporter');
         this.loading = false;
