@@ -1,7 +1,7 @@
 {
     "/jira-api": {
       "target": "https://undead34300.atlassian.net",
-      "secure": true,
+      "secure": true, 
       "changeOrigin": true,
       "logLevel": "debug",
       "pathRewrite": {
