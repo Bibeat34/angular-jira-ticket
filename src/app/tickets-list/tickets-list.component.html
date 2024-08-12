@@ -4,13 +4,28 @@
 
 <h2>Liste des tickets:</h2>
 
-<div class="sort-state-selection">
-  <label for="sortEtat">Ne pas afficher les états :</label>
-  <select id="sortEtat" [(ngModel)]="sortEtat">
-    <option value="Terminé(e)">Terminé(e)</option>
-    <option value="À faire">À faire</option>
-    <option value="Revue en cours">Revue en cours</option>
-  </select>
+
+<div class="filter-container">
+  <div class="sort-name">
+    <label for="sortName">Nom: </label>
+    <input 
+      type="text" 
+      id="sortName" 
+      [(ngModel)]="sortName"
+      (ngModelChange)="onSortNameChange()" 
+      name="sortName"
+      placeholder="Entrer un nom">
+  </div>
+
+  <div class="sort-state-selection">
+    <label for="sortEtat">Status :</label>
+    <select id="sortEtat" [(ngModel)]="sortEtat">
+      <option value="Terminé(e)">Terminé</option>
+      <option value="À faire">À faire</option>
+      <option value="Revue en cours">Revue en cours</option>
+      <option value="Tous">Tous</option>
+    </select>
+  </div>
 </div>
 
 @if (loading) {
@@ -36,7 +51,7 @@
     </thead>
     <tbody>
       @for (issue of sortedIssues; track issue.key) {
-        @if (issue.fields.status.name != sortEtat) {
+        @if (printIt(issue)) {
           <tr (click)="showTicket(issue.key)" class="clickable-row">
             <td>{{ issue.key }}</td>
             <td>{{ issue.fields.summary }}</td>
@@ -46,46 +61,8 @@
           </tr>
         }
       }
+      
     </tbody>
   </table>
 }
 
-<!-- <h2>Liste des tickets:</h2>
-<button routerLink="">Revenir au menu</button>
-
-    @if (loading) {
-      <p>Loading...</p>
-    } @else if (error) {
-      <p>Error: {{ error }}</p>
-    } @else {
-        <table>
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Résumé</th>
-                <th (click)="sortBy('reporter')" [class.sorted]="sortColumn === 'reporter'">
-                    Reporter <span *ngIf="sortColumn === 'reporter'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                </th>
-                <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
-                    Status <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                </th>
-                <th (click)="sortBy('created')" [class.sorted]="sortColumn === 'created'">
-                    Date de création <span *ngIf="sortColumn === 'created'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                </th>
-            </thead>
-            <tbody>
-              @for (issue of sortedIssues; track issue.key) {
-                @if (issue.fields.status.name != this.sortEtat) {
-                  <tr (click)="showTicket(issue.key)" class="clickable-row">
-                    <td>{{ issue.key }}</td>
-                    <td>{{ issue.fields.summary }}</td>
-                    <td>{{ issue.fields.customfield_10067 }}</td>
-                    <td>{{ issue.fields.status.name }}</td>
-                    <td>{{ formatDate(issue.fields.created) }}</td>                  
-                  </tr>
-                }
-              }
-            </tbody>
-          </table>
-    }
-     -->
