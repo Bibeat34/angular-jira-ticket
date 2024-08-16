@@ -7,7 +7,7 @@
 
 <div class="filter-container">
   <div class="sort-name">
-    <label for="sortName">Nom: </label>
+    <label for="sortName">Nom de l'auteur: </label>
     <input 
       type="text" 
       id="sortName" 
@@ -39,13 +39,13 @@
         <th>Key</th>
         <th>Résumé</th>
         <th (click)="sortBy('reporter')" [class.sorted]="sortColumn === 'reporter'">
-          Reporter <span *ngIf="sortColumn === 'reporter'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          Reporter @if (sortColumn === 'reporter') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>} 
         </th>
         <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
-          Status <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          Status @if (sortColumn === 'status') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>} 
         </th>
         <th (click)="sortBy('created')" [class.sorted]="sortColumn === 'created'">
-          Date de création <span *ngIf="sortColumn === 'created'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          Date de création @if (sortColumn === 'created') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>}
         </th>
       </tr>
     </thead>

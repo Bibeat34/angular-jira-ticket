@@ -1,0 +1,112 @@
+@if (!ticketCreated) {
+  <div class="fixed-button">
+    <button routerLink="">Revenir au menu</button>
+  </div>
+
+  <div>
+    <h1>Créer un ticket</h1>
+  
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <label for="surname">Prénom: </label>
+        <input 
+          type="text" 
+          id="surname" 
+          [(ngModel)]="surname" 
+          name="surname"
+          placeholder="Entrer votre prénom" 
+          required>
+      </div>
+  
+      <div>
+        <label for="name">Nom: </label>
+        <input 
+          type="text" 
+          id="name" 
+          [(ngModel)]="name" 
+          name="name" 
+          placeholder="Entrer votre nom"
+          required>
+      </div>    
+      
+      <div>
+        <label for="mail">Email: </label>
+        <input 
+          type="email" 
+          id="mail" 
+          [(ngModel)]="mail" 
+          name="mail" 
+          placeholder="Entrer votre mail"
+          required>
+      </div>
+      
+      <div>
+        <label for="summary">Objet: </label>
+        <input 
+          type="text" 
+          id="summary" 
+          [(ngModel)]="summary" 
+          name="summary"
+          placeholder="L'objet ou résumé du ticket" 
+          required>
+      </div> 
+      
+      <div>
+        <label for="description">Description:</label>
+        <textarea 
+          id="description" 
+          [(ngModel)]="description" 
+          name="description" 
+          rows="5"
+          placeholder="Expliquer votre problème" 
+          required>
+        </textarea>
+      </div>
+
+      <div>
+        <label for="attachments">Pièces jointes:</label>
+        <input type="file" id="attachments" (change)="onFileSelected($event)" multiple>
+        @if (attachments.length > 0) {
+          <ul class="attachment-list">
+            @for (file of attachments; track file.name) {
+              <li 
+                class="attachment-item" 
+                (mouseenter)="showPreview($event, file)" 
+                (mousemove)="updatePreviewPosition($event)"
+                (mouseleave)="hidePreview()"
+              >
+                {{ file.name }}
+                <button type="button" (click)="removeFile(file)">Supprimer</button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+  
+      @if (errorMessage) {
+        <div style="color: red;">
+        {{ errorMessage }}
+        </div>
+      } 
+      <button type="submit">Créer le ticket</button> 
+    </form>
+  </div>
+}
+
+@if (previewFile) {
+  <div class="file-preview" [style.left.px]="previewX" [style.top.px]="previewY">
+    @if (isImageFile(previewFile)) {
+      <img [src]="getFilePreviewUrl(previewFile)" alt="Aperçu" />
+    } @else {
+      <span class="file-icon">{{ getFileIcon(previewFile) }}</span>
+    }
+  </div>
+}
+
+@if (ticketCreated) {
+  <div>
+    <h2 style="color: green;">Ticket créé avec succès!</h2>
+  </div>
+
+<button routerLink="">Revenir au menu</button>
+}

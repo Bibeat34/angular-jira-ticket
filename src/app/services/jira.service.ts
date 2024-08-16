@@ -25,8 +25,31 @@ export class JiraService {
     return this.http.post(`${this.apiUrl}/issue`, issueData, { headers: this.getHeaders() });
   }
 
-  getIssues(projectKey: string): Observable<any> {
-    const jql = `project = "${projectKey}" ORDER BY created DESC`;
+  attachFile(issueId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    const headers = new HttpHeaders({
+      'X-Atlassian-Token': 'no-check',
+      'Authorization': `Basic ${btoa(this.authToken)}`
+    });
+
+    // Ne pas définir le Content-Type ici, laissez Angular le faire automatiquement
+    return this.http.post(`${this.apiUrl}/issue/${issueId}/attachments`, formData, { 
+      headers: headers,
+      // Ajoutez cette option pour voir les détails de la progression
+      reportProgress: true
+    });
+  }
+  /* attachFile(issueId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post(`${this.apiUrl}/issue/${issueId}/attachments`, formData, { headers: this.getHeaders() });
+  } */
+
+  getIssues(issueType: string, projectKey: string): Observable<any> {
+    const jql = `type = "${issueType}" AND project = "${projectKey}" ORDER BY created DESC`;
     const params = new HttpParams()
       .set('jql', jql)
       .set('fields', 'key,summary,status,created,customfield_10067');

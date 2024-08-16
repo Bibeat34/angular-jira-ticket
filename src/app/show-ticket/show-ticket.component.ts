@@ -1,15 +1,18 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { JiraService } from '../services/jira.service';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor} from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-show-ticket',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule, RouterLink],
+  imports: [
+    NgFor,
+    FormsModule,
+    RouterLink
+  ],
   templateUrl: './show-ticket.component.html',
   styleUrl: './show-ticket.component.scss'
 })
@@ -44,7 +47,6 @@ export class ShowTicketComponent implements OnInit {
       next: (data) => {
         this.ngZone.run(() => {
           this.ticket = data;
-          //console.log('Ticket data:', this.ticket);
           this.loading = false;
         });
       },
@@ -90,6 +92,14 @@ export class ShowTicketComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     } );
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
   getCommentBody(comment: any): SafeHtml {

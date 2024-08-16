@@ -1,4 +1,3 @@
-import { NgClass, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { JiraService } from '../services/jira.service';
 import { environment } from '../environments/environment';
@@ -9,8 +8,6 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-tickets-list',
   standalone: true,
   imports: [
-    NgClass,
-    NgIf,
     FormsModule,
     RouterLink,    
   ],
@@ -39,10 +36,10 @@ export class TicketsListComponent implements OnInit {
   }
 
   loadIssues() {
-    this.jiraService.getIssues(environment.jiraProjectKey).subscribe({
+    this.jiraService.getIssues(environment.issueType ,environment.jiraProjectKey).subscribe({
       next: (data) => {
         this.issues = data.issues;
-        console.log(this.issues[1].fields.status.name);
+        //console.log(this.issues[1].fields.status.name);
         this.sortedIssues = [...this.issues];
         this.sortBy('reporter');
         this.loading = false;
@@ -66,9 +63,7 @@ export class TicketsListComponent implements OnInit {
   private sortIssues(column: string) {  
     this.sortedIssues.sort((a, b) => {
       let valueA: any;
-      let valueB: any;
-      
-     
+      let valueB: any;    
 
       switch (column) {
         /* case 'key':
@@ -124,9 +119,6 @@ export class TicketsListComponent implements OnInit {
     this.applyFilters();
   }
   
-  onSortEtatChange() {
-    this.applyFilters();
-  }
   
   printIt(issue: any): boolean {
     this.doPrint = false;
