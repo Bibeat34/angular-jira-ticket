@@ -54,7 +54,16 @@
         @if (printIt(issue)) {
           <tr (click)="showTicket(issue.key)" class="clickable-row">
             <td>{{ issue.key }}</td>
-            <td>{{ issue.fields.summary }}</td>
+            <td 
+              (mouseenter)="showDescription(issue)"
+              (mouseleave)="hideDescription()"
+              style="position: relative;">
+              {{ issue.fields.summary }}
+              @if (hoveredTicket === issue) {
+                <div class="description-tooltip" [innerHTML]="getDescription()"></div>
+              }
+              
+            </td>
             <td>{{ issue.fields.customfield_10067 }}</td>
             <td>{{ issue.fields.status.name }}</td>
             <td>{{ formatDate(issue.fields.created) }}</td>                  

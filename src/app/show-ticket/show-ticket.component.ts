@@ -1,9 +1,11 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { JiraService } from '../services/jira.service';
 import { NgFor} from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-show-ticket',
@@ -16,17 +18,19 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './show-ticket.component.html',
   styleUrl: './show-ticket.component.scss'
 })
-export class ShowTicketComponent implements OnInit {
+export class ShowTicketComponent implements OnInit, OnDestroy {
   ticket: any;
   loading = true;
   error: string | null = null;
   newComment: string = "";
   addingComment: boolean = false;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private jiraService: JiraService,
-    private sanitazer: DomSanitizer,
+    private sanitizer: DomSanitizer,
     private ngZone: NgZone,
   ) {}
 
@@ -40,12 +44,22 @@ export class ShowTicketComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    console.log("unsubscribe")
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadTicket(id: string) {
     this.loading = true;
     this.error = null;
-    this.jiraService.getIssue(id).subscribe({
+    takeUntilDestroyed
+    this.jiraService.getIssue(id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (data) => {
         this.ngZone.run(() => {
+          console.log(data)
           this.ticket = data;
           this.loading = false;
         });
@@ -61,24 +75,13 @@ export class ShowTicketComponent implements OnInit {
   }
 
   getDescription(): SafeHtml {
-    if (this.ticket && this.ticket.fields && this.ticket.fields.description) {
+    if (this.ticket?.fields?.description) {
       if (typeof this.ticket.fields.description === 'string') {
-        return this.sanitazer.bypassSecurityTrustHtml(this.ticket.fields.description);
+        return this.sanitizer.bypassSecurityTrustHtml(this.ticket.fields.description);
       } else if (this.ticket.fields.description.content) {
         // Traitement pour le format Atlassian Document
-        let htmlContent = '';
-        for (const contentItem of this.ticket.fields.description.content) {
-          if (contentItem.type === 'paragraph') {
-            htmlContent += '<p>';
-            for (const textItem of contentItem.content) {
-              if (textItem.type === 'text') {
-                htmlContent += textItem.text;
-              }
-            }
-            htmlContent += '</p>';
-          }
-        }
-        return this.sanitazer.bypassSecurityTrustHtml(htmlContent);
+        const htmlContent = this.parseAtlassianDocument(this.ticket.fields.description);
+        return this.sanitizer.bypassSecurityTrustHtml(htmlContent);
       }
     }
     return '';
@@ -103,25 +106,13 @@ export class ShowTicketComponent implements OnInit {
   }
 
   getCommentBody(comment: any): SafeHtml {
-    if (comment && comment.body) {
+    if (comment?.body) {
       if (typeof comment.body === 'string') {
-        return this.sanitazer.bypassSecurityTrustHtml(comment.body);
+        return this.sanitizer.bypassSecurityTrustHtml(comment.body);
       } else if (comment.body.content) {
         // Traitement pour le format Atlassian Document
-        let htmlContent = '';
-        for (const contentItem of comment.body.content) {
-          if (contentItem.type === 'paragraph') {
-            htmlContent += '<p>';
-            for (const textItem of contentItem.content) {
-              if (textItem.type === 'text') {
-                htmlContent += textItem.text;
-              }
-            }
-            htmlContent += '</p>';
-          }
-          // Tu peux ajouter d'autres types de traitement ici si nécessaire
-        }
-        return this.sanitazer.bypassSecurityTrustHtml(htmlContent);
+        const htmlContent = this.parseAtlassianDocument(comment.body);
+        return this.sanitizer.bypassSecurityTrustHtml(htmlContent);
       }
     }
     return '';
@@ -179,7 +170,27 @@ export class ShowTicketComponent implements OnInit {
       }
     });
   }
+
+
+
+  private parseAtlassianDocument(document: any): string {
+    let htmlContent = '';
+    for (const contentItem of document.content) {
+      if (contentItem.type === 'paragraph') {
+        htmlContent += '<p>';
+        for (const textItem of contentItem.content) {
+          if (textItem.type === 'text') {
+            htmlContent += textItem.text;
+          }
+        }
+        htmlContent += '</p>';
+      }
+    }
+    return htmlContent;
+  }
 }
+
+
 
 
 

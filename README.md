@@ -8,12 +8,11 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The appli
 
 ## Modif a faire
 
-Dans /src/app/services/jira.service.ts, il faut changé authToken et mettre le bon
+Dans /src/env.json, il faut changer les valeurs et mettre les votre
 
 ## Idée(s) à ajouter:
 
 **Pour éviter le vol d'identité, envoyer un mail de confirmation d'envoi à l'email entrer dans le formulaire. Depuis jira si possible, sinon depuis l'app.
 **Peu etre plus tard ajouter une fonction pour voir si l'email est présent dans la base de données, si non, refuser l'envoi du ticket.
-!! customfield a vérifié pour généralisé l'export !!
 **A voir pour trim() les données d'entrer pour éviter tout problème
 

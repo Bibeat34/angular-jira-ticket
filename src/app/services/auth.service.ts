@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+/* import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -43,3 +43,4 @@ export class AuthService {
     return this.isAuthenticated || !!localStorage.getItem('user');
   }
 }
+ */

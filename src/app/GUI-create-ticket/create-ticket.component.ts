@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { JiraService } from '../services/jira.service';
 import { FormsModule } from '@angular/forms';
-import { environment } from '../environments/environment';
+//import { environment } from '../environments/environment';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
+import environment from '../../env.json'
 
 @Component({
   selector: 'app-create-ticket',
@@ -150,13 +152,14 @@ export class CreateTicketComponent {
 
   private setIssueData() {
     this.name += " " + this.surname;
+
     const data = {
       fields: {
         project: {
           key: environment.jiraProjectKey
         },
-        customfield_10067: this.name,
-        customfield_10066: this.mail.trim(),
+        [`customfield_${environment.champNom}`] : this.name,
+        [`customfield_${environment.champMail}`]: this.mail.trim(),
         summary: this.summary.trim(),
         description: {
           type: "doc",

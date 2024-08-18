@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { map, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs';
-import { environment } from '../environments/environment';
+
+import environment from '../../env.json';
 
 @Injectable({
   providedIn: 'root'
@@ -41,12 +42,6 @@ export class JiraService {
       reportProgress: true
     });
   }
-  /* attachFile(issueId: string, file: File): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    return this.http.post(`${this.apiUrl}/issue/${issueId}/attachments`, formData, { headers: this.getHeaders() });
-  } */
 
   getIssues(issueType: string, projectKey: string): Observable<any> {
     const jql = `type = "${issueType}" AND project = "${projectKey}" ORDER BY created DESC`;
@@ -60,15 +55,15 @@ export class JiraService {
     });
   }
 
-    getIssue(issueKey: string): Observable<any> {
-      return this.http.get(`${this.apiUrl}/issue/${issueKey}`, { headers: this.getHeaders() })
-      .pipe(
-        map(response => {
-          //console.log('Raw API response:', response);
-          return response;
-        })
-      );
-    }  
+  getIssue(issueKey: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/issue/${issueKey}`, { headers: this.getHeaders() })
+    .pipe(
+      map(response => {
+        //console.log('Raw API response:', response);
+        return response;
+      })
+    );
+  }  
     
      addComment(issueId: string, comment: any): Observable<any> {
       const url = `${this.apiUrl}/issue/${issueId}/comment`;
