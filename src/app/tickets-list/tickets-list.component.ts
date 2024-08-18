@@ -155,6 +155,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/ticket-list', ticketId]);
   }
 
+  
+
   private sortIssues() {
     const column = this.sortColumn;
     if (!column) return;

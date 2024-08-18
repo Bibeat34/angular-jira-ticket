@@ -151,14 +151,12 @@ export class CreateTicketComponent {
   }
 
   private setIssueData() {
-    this.name += " " + this.surname;
-
     const data = {
       fields: {
         project: {
           key: environment.jiraProjectKey
         },
-        [`customfield_${environment.champNom}`] : this.name,
+        [`customfield_${environment.champNom}`] : this.name + " " + this.surname,
         [`customfield_${environment.champMail}`]: this.mail.trim(),
         summary: this.summary.trim(),
         description: {

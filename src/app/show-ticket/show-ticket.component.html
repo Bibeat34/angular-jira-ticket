@@ -11,7 +11,7 @@
     <h2>{{ ticket.fields.summary }}</h2>
     <p><strong>Reporter:</strong> {{ ticket.fields.customfield_10067 }}</p>
     <p><strong>Créé le:</strong> {{ formatDate(ticket.fields.created) }}</p>
-    <p><strong>Status:</strong> {{ ticket.fields.status?.name }}</p>
+    <p><strong>Statut:</strong> {{ ticket.fields.status?.name }}</p>
     <p><strong>Key:</strong> {{ ticket.key}} </p>
     <p><strong>Priorité:</strong> {{ ticket.fields.priority?.name }}</p>  
     <p><strong>Description:</strong></p>
