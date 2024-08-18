@@ -42,4 +42,4 @@ testem.log
 Thumbs.db
 
 #Hide token
-/src/env.json
+#/src/env.json
