@@ -3,7 +3,7 @@ import { JiraService } from '../services/jira.service';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import environment from '../../env.json';
 
 @Component({
@@ -26,7 +26,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   descriptionLoading = false;
   hoveredTicket: any = null;
   hoveredTicketDescription: any = null;
-
+  private currentDescriptionSubscription$: Subscription | null = null;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -40,13 +41,16 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("subscribe destroy")
+    console.log("unsubscribe getIssues")
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.currentDescriptionSubscription$) {
+      this.currentDescriptionSubscription$.unsubscribe();
+    }
   }
 
   loadIssues() {
-    this.jiraService.getIssues(environment.issueType, environment.jiraProjectKey)
+      this.jiraService.getIssues(environment.issueType, environment.jiraProjectKey)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
@@ -94,56 +98,22 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     }
     return true;
   }
-  
-  loadTicket(id: string) {
-    this.descriptionLoading = true;
-    this.error = null;
-    this.jiraService.getIssue(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.hoveredTicketDescription = data;
-          this.descriptionLoading = false;
-        },
-        error: (err) => {
-          console.error('Error loading ticket:', err);
-          this.error = 'Failed to load ticket. Please try again later.';
-          this.descriptionLoading = false;
-        }
-      });
-  }
-  
-  getDescription(): SafeHtml {
-    if (!this.hoveredTicketDescription) {
-      this.loadTicket(this.hoveredTicket.key);
-      return 'Loading description...';
-    }
 
-    const description = this.hoveredTicketDescription.fields?.description;
-    if (!description) {
-      return 'No description available';
-    }
-
-    if (typeof description === 'string') {
-      return this.sanitizer.bypassSecurityTrustHtml(description);
-    }
-
-    if (description.content) {
-      const htmlContent = this.parseAtlassianDocument(description);
-      return this.sanitizer.bypassSecurityTrustHtml(htmlContent);
-    }
-
-    return 'Invalid description format';
-  }
-
-  
   showDescription(issue: any) {
-    this.hoveredTicket = issue;
+    if(this.hoveredTicket !== issue) {
+      this.hoveredTicket = issue;
+      this.hoveredTicketDescription = null;
+      this.loadTicketDescription(issue.key);
+    }
   }
 
   hideDescription() {
     this.hoveredTicket = null;
     this.hoveredTicketDescription = null;
+    if (this.currentDescriptionSubscription$) {
+      this.currentDescriptionSubscription$.unsubscribe();
+      this.currentDescriptionSubscription$ = null;
+    }
   }
   
   formatDate(dateString: string): string {
@@ -154,9 +124,32 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     this.hideDescription();
     this.router.navigate(['/ticket-list', ticketId]);
   }
-
   
 
+
+
+
+
+  
+  
+  private loadTicketDescription(ticketKey: string) {
+    if (this.currentDescriptionSubscription$) {
+      this.currentDescriptionSubscription$.unsubscribe();
+    }
+
+    this.currentDescriptionSubscription$ = this.jiraService.getIssue(ticketKey)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.hoveredTicketDescription = this.parseDescription(data);
+        },
+        error: (err) => {
+          console.error('Error loading ticket:', err);
+          this.hoveredTicketDescription = this.sanitizer.bypassSecurityTrustHtml('Failed to load description.');
+        }
+      });
+  }
+    
   private sortIssues() {
     const column = this.sortColumn;
     if (!column) return;
@@ -192,6 +185,23 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     });
   }
 
+  private parseDescription(issueData: any): SafeHtml {
+    const description = issueData.fields?.description;
+    if (!description) {
+      return this.sanitizer.bypassSecurityTrustHtml('No description available');
+    }
+    
+    if (typeof description === 'string') {
+      return this.sanitizer.bypassSecurityTrustHtml(description);
+    }
+    
+    if (description.content) {
+      const htmlContent = this.parseAtlassianDocument(description);
+      return this.sanitizer.bypassSecurityTrustHtml(htmlContent);
+    }
+
+    return this.sanitizer.bypassSecurityTrustHtml('Invalid description format');
+  }
   
   private parseAtlassianDocument(document: any): string {
     let htmlContent = '';

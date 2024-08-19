@@ -12,7 +12,7 @@
         <input 
           type="text" 
           id="surname" 
-          [(ngModel)]="surname" 
+          [(ngModel)]="surname" (input)="onSurnameInput($event)" 
           name="surname"
           placeholder="Entrer votre prénom" 
           required>
@@ -23,7 +23,7 @@
         <input 
           type="text" 
           id="name" 
-          [(ngModel)]="name" 
+          [(ngModel)]="name" (input)="onNameInput($event)" 
           name="name" 
           placeholder="Entrer votre nom"
           required>

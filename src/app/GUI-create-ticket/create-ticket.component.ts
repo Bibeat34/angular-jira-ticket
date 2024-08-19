@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { JiraService } from '../services/jira.service';
 import { FormsModule } from '@angular/forms';
-//import { environment } from '../environments/environment';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
@@ -94,6 +93,18 @@ export class CreateTicketComponent {
     return '📎';
   }
 
+  onNameInput(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = this.filterNonAlphabetic(inputElement.value);
+    this.name = this.capitalizeFirstLetter(inputElement.value);
+  }
+
+  onSurnameInput(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = this.filterNonAlphabetic(inputElement.value);
+    this.surname = this.capitalizeFirstLetter(inputElement.value);
+  }
+
   onSubmit() {
     if (this.isFieldError()) {return} 
     
@@ -119,6 +130,10 @@ export class CreateTicketComponent {
   }
 
 
+
+
+  
+
   private attachFiles(issueId: string) {
     this.attachments.forEach(file => {
       this.jiraService.attachFile(issueId, file).subscribe({
@@ -128,17 +143,39 @@ export class CreateTicketComponent {
     });
   }
 
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  }
+
+  private capitalizeFirstLetter(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
+  private filterNonAlphabetic(str: string): string {
+    return str.replace(/[^a-zA-Z]/g, '');
+  }
 
   private isFieldError(): boolean {
-    this.errorMessage = ""
-      if (!this.name.trim()){
+    this.errorMessage = "";
+    this.name = this.capitalizeFirstLetter(this.filterNonAlphabetic(this.name.trim()));
+    this.surname = this.capitalizeFirstLetter(this.filterNonAlphabetic(this.surname.trim()));
+
+      if (!this.name){
         this.errorMessage = " Nom,";
-      } if (!this.surname.trim()){
+
+      } if (!this.surname){
         this.errorMessage += " Prénom,";
+
       } if (!this.mail.trim()){
         this.errorMessage += " Email,";
+      } else if (!this.isValidEmail(this.mail.trim())) {
+        this.errorMessage = " Email invalide (format: adresse@mail.com)";
+        return true;
+
       } if (!this.summary.trim()){
         this.errorMessage += " l'Objet,";
+
       } if (!this.description.trim()){
         this.errorMessage += " la Description.";
       }

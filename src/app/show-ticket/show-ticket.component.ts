@@ -24,6 +24,7 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
   error: string | null = null;
   newComment: string = "";
   addingComment: boolean = false;
+  sortedComments: any[] = [];
 
   private destroy$ = new Subject<void>();
 
@@ -53,7 +54,6 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
   loadTicket(id: string) {
     this.loading = true;
     this.error = null;
-    takeUntilDestroyed
     this.jiraService.getIssue(id).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
@@ -61,6 +61,7 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
         this.ngZone.run(() => {
           console.log(data)
           this.ticket = data;
+          this.sortComments();
           this.loading = false;
         });
       },
@@ -118,39 +119,28 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  sortComments() {
+    if (this.ticket?.fields?.comment?.comments) {
+      this.sortedComments = [...this.ticket.fields.comment.comments].sort((a, b) => 
+        new Date(b.created).getTime() - new Date(a.created).getTime()
+      );
+    }
+  } 
   
   addComment() {
     if (!this.newComment.trim()) return;
     
-    const commentBody = {
-      body: {
-        type: "doc",
-        version: 1,
-        content: [
-          {
-            type: "paragraph",
-            content: [
-              {
-                type: "text",
-                text: this.newComment
-              }
-            ]
-        }] 
-      }
-    };
-  
-   // console.log('Adding comment to ticket:', this.ticket.key);
-   // console.log('Comment body:', JSON.stringify(commentBody, null, 2));
-    
+    const commentBody = this.setCommentBody()  
     this.addingComment = true;
+    
     this.jiraService.addComment(this.ticket.key, commentBody).subscribe({
       next: (response) => {
         this.ngZone.run(() => {
-         // console.log('Comment added successfully:', response);
-          if (!this.ticket.fields.comment) {
+         if (!this.ticket.fields.comment) {
             this.ticket.fields.comment = { comments: [] };
           }
           this.ticket.fields.comment.comments.push(response);
+          this.sortComments();
           this.newComment = '';
           this.error = null;
 
@@ -188,51 +178,24 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     }
     return htmlContent;
   }
-}
 
-
-
-
-
-/*addComment() {
-  if (this.ticket.key && this.newComment) {
-    this.jiraService.addComment(this.ticket.key, this.newComment).subscribe(
-      response => {
-        console.log('Commentaire ajouté avec succès', response);
-        // Réinitialisez le champ de commentaire après l'ajout
-        this.newComment = '';
-      },
-      error => {
-        console.error('Erreur lors de l\'ajout du commentaire', error);
+  private setCommentBody() {
+    const commentBody = {
+      body: {
+        type: "doc",
+        version: 1,
+        content: [
+          {
+            type: "paragraph",
+            content: [
+              {
+                type: "text",
+                text: this.newComment
+              }
+            ]
+        }] 
       }
-    );
-  } else {
-    console.warn('ID du ticket et texte du commentaire doivent être fournis');
+    };
+    return commentBody
   }
-} */  
-/* addComment(): void {
-  if (!this.newComment.trim()) {
-    return; // Ne pas permettre l'ajout de commentaires vides
-  }
-
-  this.addingComment = true;
-
-  const commentData = {
-    body: this.newComment
-  };
-
-  this.jiraService.addComment(this.ticket.id, commentData).subscribe({
-    next: (response) => {
-      // Commentaire ajouté avec succès
-      this.ticket.fields.comment.comments.push(response);
-      this.newComment = '';
-    },
-    error: (err) => {
-      console.error('Failed to add comment', err);
-      this.error = 'Failed to add comment';
-    },
-    complete: () => {
-      this.addingComment = false;
-    }
-  });
-} */
+}

@@ -34,16 +34,20 @@
 
   <div class="comments-section">
     <h3>Commentaires:</h3>
-    @if (ticket.fields.comment?.total > 0) {
+    @if (sortedComments.length > 0) {
       <ul class="comment-list">
-        <li *ngFor="let comment of ticket.fields.comment?.comments" class="comment">
-          <p class="comment-meta">
-            <strong>{{ comment.author?.displayName || 'Chargement...' }}</strong> - {{ formatDate(comment.created) }}
-          </p>
-          <div class="comment-body" [innerHTML]="getCommentBody(comment)"></div>
-        </li>
+        @for (comment of sortedComments; track comment.id) {        
+          <li class="comment">
+            <p class="comment-meta">
+              <strong>{{ comment.author?.displayName || 'Chargement...' }}</strong> - {{ formatDate(comment.created) }}
+            </p>
+            <div class="comment-body" [innerHTML]="getCommentBody(comment)"></div>
+          </li>
+        }
       </ul>
-    }
+    } @else {
+          <p>Aucun commentaire pour le moment.</p>
+        }
     
 
     <div class="add-comment-section">

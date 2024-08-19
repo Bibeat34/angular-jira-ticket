@@ -59,8 +59,8 @@
               (mouseleave)="hideDescription()"
               style="position: relative;">
               {{ issue.fields.summary }}
-              @if (hoveredTicket === issue) {
-                <div class="description-tooltip" [innerHTML]="getDescription()"></div>
+              @if (hoveredTicket === issue && hoveredTicketDescription) {
+                <div class="description-tooltip" [innerHTML]="hoveredTicketDescription"></div>
               }
               
             </td>
