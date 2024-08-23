@@ -29,9 +29,9 @@
 </div>
 
 @if (loading) {
-  <p>Loading...</p>
+  <p>Chargement...</p>
 } @else if (error) {
-  <p>Error: {{ error }}</p>
+  <p style="color: red;">{{ error }}</p>
 } @else {
   <table>
     <thead>
@@ -64,7 +64,9 @@
               }
               
             </td>
-            <td>{{ issue.fields.customfield_10067 }}</td>
+            @if (getName(issue.fields); as name) {
+              <td>{{ name }} </td>
+            }@else {<td style="color: red;">Pas de nom</td>}
             <td>{{ issue.fields.status.name }}</td>
             <td>{{ formatDate(issue.fields.created) }}</td>                  
           </tr>

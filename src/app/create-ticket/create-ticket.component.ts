@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 import environment from '../../env.json'
+import proxyConf from '../../../proxy.conf.json'
 
 @Component({
   selector: 'app-create-ticket',
@@ -119,9 +120,9 @@ export class CreateTicketComponent {
           this.attachFiles(response.id);
         }
       },  
-      error: (error) => {
-        this.errorMessage = "Une erreur est survenue lors de la création du ticket.";
+      error: (error) => {        
         console.error('Erreur', error);
+        this.updateErrorMessage(error.status)
         if (error.error && error.error.errors) {
           console.error("Détails de l'erreur:", error.error.errors);
         }
@@ -149,11 +150,11 @@ export class CreateTicketComponent {
   }
 
   private capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return str.charAt(0).toUpperCase(); // + str.slice(1).toLowerCase();
   }
 
   private filterNonAlphabetic(str: string): string {
-    return str.replace(/[^a-zA-Z]/g, '');
+    return str.replace(/[^a-zA-Z-]/g, '');
   }
 
   private isFieldError(): boolean {
@@ -218,4 +219,20 @@ export class CreateTicketComponent {
     }
     return data
   }  
+
+
+  private updateErrorMessage(errNum: number): void{
+    this.errorMessage = "Une erreur est survenue lors de la création du ticket.";
+
+    if (errNum === 404)
+      this.errorMessage += `  Il il a peut-être une erreur dans l'Url du proxy : ${proxyConf['/jira-api'].target}.`  
+    if (errNum === 400)
+      this.errorMessage += `  Il il a peut-être une erreur dans l'id d'un des champs perso.`  
+    if (errNum === 401){
+      this.errorMessage += ` Il y a peut-être une erreur dans le mail "${environment.jiraMail}" ou dans le jeton d'API.`
+    }
+    if (errNum === 403){
+      this.errorMessage += `Il y a un problème avec les packages. Aller dans l'invite de commandes, placez-vous à la racine et entrer "npm install"`
+    }
+  }
 }

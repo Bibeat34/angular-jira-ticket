@@ -22,7 +22,7 @@ export class JiraService {
   }
 
   createIssue(issueData: any): Observable<any> {
-    console.log('Données envoyées à Jira:', JSON.stringify(issueData, null, 2));
+    //console.log('Données envoyées à Jira:', JSON.stringify(issueData, null, 2));
     return this.http.post(`${this.apiUrl}/issue`, issueData, { headers: this.getHeaders() });
   }
 
@@ -47,8 +47,8 @@ export class JiraService {
     const jql = `type = "${issueType}" AND project = "${projectKey}" ORDER BY created DESC`;
     const params = new HttpParams()
       .set('jql', jql)
-      .set('fields', 'key,summary,status,created,customfield_10067');
-
+      .set('fields', `key,summary,status,created,customfield_${environment.champNom}`);
+      //subscribe pour essayer de récup une erreur sur le type ou la clé
     return this.http.get(`${this.apiUrl}/search`, { 
       headers: this.getHeaders(),
       params: params

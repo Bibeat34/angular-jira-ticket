@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import environment from '../../env.json';
+import proxyConf from '../../../proxy.conf.json'
 
 @Component({
   selector: 'app-tickets-list',
@@ -56,11 +57,21 @@ export class TicketsListComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.issues = data.issues;
           this.sortedIssues = [...this.issues];
-          this.sortBy('reporter');
+          this.sortBy('created');
           this.loading = false;
         },
         error: (err) => {
-          this.error = 'Failed to load issues. Please try again later.';
+          this.error = "Les tickets n'ont pas pu être chargé.";
+          if (err.status === 404){
+            this.error += ` Il il a peut-être une erreur dans l'Url du proxy "${proxyConf['/jira-api'].target}."`
+          }
+          if (err.status === 400){
+            this.error += ` Il y a peut-être une erreur dans:
+                             le mail "${environment.jiraMail}",
+                             la clé du projet "${environment.jiraMail}",
+                             le type de ticket "${environment.jiraMail}"
+                             ou dans le jeton d'API.`
+          }            
           this.loading = false;
           console.error('Error loading issues:', err);
         }
@@ -120,6 +131,15 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     return new Date(dateString).toLocaleDateString();
   }
   
+  getName(issueFields: any): string {
+    let name = issueFields[`customfield_${environment.champNom}`]
+    if (!name) {
+      return ""
+    }
+    return name
+  } 
+
+
   showTicket(ticketId: string) {
     this.hideDescription();
     this.router.navigate(['/ticket-list', ticketId]);

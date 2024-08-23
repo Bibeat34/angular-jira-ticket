@@ -1,17 +1,16 @@
 import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { JiraService } from '../services/jira.service';
-import { NgFor} from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import environment from '../../env.json'
 
 @Component({
   selector: 'app-show-ticket',
   standalone: true,
   imports: [
-    NgFor,
     FormsModule,
     RouterLink
   ],
@@ -59,7 +58,6 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (data) => {
         this.ngZone.run(() => {
-          console.log(data)
           this.ticket = data;
           this.sortComments();
           this.loading = false;
@@ -73,6 +71,14 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  getName(issueFields: any): string {
+    let name = issueFields[`customfield_${environment.champNom}`]
+    if (!name) {
+      return ""
+    }
+    return name
   }
 
   getDescription(): SafeHtml {

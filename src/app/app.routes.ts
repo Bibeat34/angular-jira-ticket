@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { CreateTicketComponent } from './GUI-create-ticket/create-ticket.component';
+import { CreateTicketComponent } from './create-ticket/create-ticket.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { TicketsListComponent } from './tickets-list/tickets-list.component';
 import { ShowTicketComponent } from './show-ticket/show-ticket.component';
