@@ -63,7 +63,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
         error: (err) => {
           this.error = "Les tickets n'ont pas pu être chargé.";
           if (err.status === 404){
-            this.error += ` Il il a peut-être une erreur dans l'Url du proxy "${proxyConf['/jira-api'].target}."`
+            this.error += ` Il a peut-être une erreur dans l'Url du proxy "${proxyConf['/jira-api'].target}."`
           }
           if (err.status === 400){
             this.error += ` Il y a peut-être une erreur dans:
