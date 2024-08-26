@@ -52,7 +52,7 @@ export class CreateTicketComponent {
       this.attachments = [...this.attachments, ...uniqueNewFiles];
 
       // Réinitialiser l'input file pour permettre la sélection du même fichier
-      target.value = '';
+      target.value = `${this.attachments.length}`;
     }
   }
 
