@@ -20,7 +20,7 @@ import environment from '../../env.json'
 export class ShowTicketComponent implements OnInit, OnDestroy {
   ticket: any;
   loading = true;
-  error: string | null = null;
+  errorMessage: string | null = null;
   newComment: string = "";
   addingComment: boolean = false;
   sortedComments: any[] = [];
@@ -39,7 +39,7 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     if (ticketId) {
       this.loadTicket(ticketId);
     } else {
-      this.error = 'No ticket ID provided';
+      this.errorMessage = 'Aucun ticket trouvé';
       this.loading = false;
     }
   }
@@ -52,7 +52,7 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
 
   loadTicket(id: string) {
     this.loading = true;
-    this.error = null;
+    this.errorMessage = null;
     this.jiraService.getIssue(id).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
@@ -63,10 +63,10 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
           this.loading = false;
         });
       },
-      error: (err) => {
+      error: (error) => {
         this.ngZone.run(() => {
-          console.error('Error loading ticket:', err);
-          this.error = 'Failed to load ticket. Please try again later.';
+          console.error('Error loading ticket:', error);
+          this.errorMessage = "Le ticket n'as pas pu charger. Réessayer plus tard.";
           this.loading = false;
         });
       }
@@ -125,49 +125,50 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  sortComments() {
-    if (this.ticket?.fields?.comment?.comments) {
-      this.sortedComments = [...this.ticket.fields.comment.comments].sort((a, b) => 
-        new Date(b.created).getTime() - new Date(a.created).getTime()
-      );
-    }
-  } 
   
   addComment() {
     if (!this.newComment.trim()) return;
     
     const commentBody = this.setCommentBody()  
     this.addingComment = true;
-    
+    this.sendingToJira(commentBody)   
+  }
+  
+  
+  
+  
+  
+  
+  
+  private sortComments() {
+    if (this.ticket?.fields?.comment?.comments) {
+      this.sortedComments = [...this.ticket.fields.comment.comments].sort((a, b) => 
+        new Date(b.created).getTime() - new Date(a.created).getTime()
+      );
+    }
+  } 
+
+  private sendingToJira(commentBody: any): void {
     this.jiraService.addComment(this.ticket.key, commentBody).subscribe({
       next: (response) => {
         this.ngZone.run(() => {
-         if (!this.ticket.fields.comment) {
+          if (!this.ticket.fields.comment) {
             this.ticket.fields.comment = { comments: [] };
           }
           this.ticket.fields.comment.comments.push(response);
-          this.sortComments();
           this.newComment = '';
-          this.error = null;
-
+          this.errorMessage = null;
           this.loadTicket(this.ticket.key);
         });
       },
       error: (err) => {
         this.ngZone.run(() => {
           console.error('Error adding comment:', err);
-          this.error = `Échec de l'ajout du commentaire: ${err.message}`;
+          this.errorMessage = `Échec de l'ajout du commentaire: ${err.message}`;
         });
       },
-      complete: () => {
-        this.ngZone.run(() => {
-          this.addingComment = false;
-        });
-      }
     });
   }
-
-
 
   private parseAtlassianDocument(document: any): string {
     let htmlContent = '';
@@ -184,7 +185,7 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     }
     return htmlContent;
   }
-
+  
   private setCommentBody() {
     const commentBody = {
       body: {
@@ -199,9 +200,9 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
                 text: this.newComment
               }
             ]
-        }] 
-      }
-    };
-    return commentBody
+          }] 
+        }
+      };
+      return commentBody
+    }
   }
-}

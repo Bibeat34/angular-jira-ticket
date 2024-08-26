@@ -30,8 +30,8 @@
 
 @if (loading) {
   <p>Chargement...</p>
-} @else if (error) {
-  <p style="color: red;">{{ error }}</p>
+} @else if (errorMessage) {
+  <p style="color: red;">{{ errorMessage }}</p>
 } @else {
   <table>
     <thead>

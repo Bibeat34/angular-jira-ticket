@@ -107,6 +107,11 @@
   <div>
     <h2 style="color: green;">Ticket créé avec succès!</h2>
   </div>
+  @if (errorMessage) {
+    <div style="color: red;">
+      {{ errorMessage }}
+      </div>
+  }
 
 <button routerLink="">Revenir au menu</button>
 }

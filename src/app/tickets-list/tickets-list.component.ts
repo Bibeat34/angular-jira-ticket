@@ -15,18 +15,18 @@ import proxyConf from '../../../proxy.conf.json'
   styleUrl: './tickets-list.component.scss'
 })
 export class TicketsListComponent implements OnInit, OnDestroy {
-  issues: any[] = [];
-  sortedIssues: any[] = [];
   loading = true;
-  error: string | null = null;
+  errorMessage: string | null = null;
+  
+  issues: any[] = [];
+  sortedIssues: any[] = [];  
   sortColumn: string | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
   sortEtat: 'Terminé(e)' | 'À faire' | 'Revue en cours' | 'Tous' = 'Tous'; 
   sortName: string | null = null;
 
-  descriptionLoading = false;
-  hoveredTicket: any = null;
-  hoveredTicketDescription: any = null;
+  hoveredTicket: SafeHtml | null = null;
+  hoveredTicketDescription: SafeHtml | null = null;
   private currentDescriptionSubscription$: Subscription | null = null;
   
   private destroy$ = new Subject<void>();
@@ -42,7 +42,6 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("unsubscribe getIssues")
     this.destroy$.next();
     this.destroy$.complete();
     if (this.currentDescriptionSubscription$) {
@@ -60,20 +59,10 @@ export class TicketsListComponent implements OnInit, OnDestroy {
           this.sortBy('created');
           this.loading = false;
         },
-        error: (err) => {
-          this.error = "Les tickets n'ont pas pu être chargé.";
-          if (err.status === 404){
-            this.error += ` Il a peut-être une erreur dans l'Url du proxy "${proxyConf['/jira-api'].target}."`
-          }
-          if (err.status === 400){
-            this.error += ` Il y a peut-être une erreur dans:
-                             le mail "${environment.jiraMail}",
-                             la clé du projet "${environment.jiraMail}",
-                             le type de ticket "${environment.jiraMail}"
-                             ou dans le jeton d'API.`
-          }            
+        error: (error) => {
+          this.getErrorMessage(error.status)            
           this.loading = false;
-          console.error('Error loading issues:', err);
+          console.error('Error loading issues:', error);
         }
       });
   }
@@ -140,6 +129,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   } 
 
 
+
+  
   showTicket(ticketId: string) {
     this.hideDescription();
     this.router.navigate(['/ticket-list', ticketId]);
@@ -239,5 +230,18 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     return htmlContent;
   }
 
+  private getErrorMessage(errorStatus: number): void {
+    this.errorMessage = "Les tickets n'ont pas pu être chargé.";
+          if (errorStatus === 404){
+            this.errorMessage += ` Il a peut-être une erreur dans l'Url du proxy "${proxyConf['/jira-api'].target}."`
+          }
+          if (errorStatus === 400){
+            this.errorMessage += ` Il y a peut-être une erreur dans:
+                             le mail "${environment.jiraMail}",
+                             la clé du projet "${environment.jiraMail}",
+                             le type de ticket "${environment.jiraMail}"
+                             ou dans le jeton d'API.`
+          }
+  }
 }
 

@@ -3,17 +3,21 @@
   <button routerLink="/ticket-list" class="back-button">Revenir à la liste</button>
 </div>
 
-@if (loading) {<div class="loading">Loading...</div>}
-@if (error) {<div class="error">{{ error }}</div>}
-@if (!loading && !error && ticket) {
+@if (loading) {
+  <div class="loading">Loading...</div>
+}@if (errorMessage) {
+  <div class="error">{{ errorMessage }}</div>
+}
+
+@if (!loading && !errorMessage && ticket) {
   <div class="ticket-details">
   <div class="ticket-details-section">
     <h2>{{ ticket.fields.summary }}</h2>
     @if (getName(ticket.fields); as name) {
-    <p><strong>Reporter:</strong> {{ name }}</p>
-  }@else {
-    <p style="color: red;"><strong>Reporter:</strong>Pas de nom trouvé</p>
-  }
+      <p><strong>Reporter:</strong> {{ name }}</p>
+    }@else {
+      <p style="color: red;"><strong>Reporter:</strong>Pas de nom trouvé</p>
+    }
     <p><strong>Créé le:</strong> {{ formatDate(ticket.fields.created) }}</p>
     <p><strong>Statut:</strong> {{ ticket.fields.status?.name }}</p>
     <p><strong>Key:</strong> {{ ticket.key}} </p>

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
-import { map, Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 
 import environment from '../../env.json';
 
@@ -65,37 +64,13 @@ export class JiraService {
     );
   }  
     
-     addComment(issueId: string, comment: any): Observable<any> {
-      const url = `${this.apiUrl}/issue/${issueId}/comment`;
-      return this.http.post(url, comment, { 
-        headers: this.getHeaders(),
-        observe: 'response'
-       });
-    }  
+  addComment(issueId: string, comment: any): Observable<any> {
+    const url = `${this.apiUrl}/issue/${issueId}/comment`;
+    return this.http.post(url, comment, { 
+      headers: this.getHeaders(),
+      observe: 'response'
+     });
+  }  
 
-    /* addComment(issueKey: string, commentBody: any): Observable<any> {
-      const url = `${this.apiUrl}/issue/${issueKey}/comment`;
-      console.log('Sending request to:', url);
-      console.log('With headers:', this.getHeaders());
-      console.log('With body:', JSON.stringify(commentBody, null, 2));
-  
-      return this.http.post(url, commentBody, { 
-        headers: this.getHeaders(),
-        observe: 'response'
-      }).pipe(
-        tap(response => console.log('Full response:', response)),
-        catchError(this.handleError)
-      );
-    }
-    
-    private handleError(error: HttpErrorResponse) {
-      console.error('An error occurred:', error);
-      if (error.error instanceof ErrorEvent) {
-        console.error('Client-side error:', error.error.message);
-      } else {
-        console.error(`Backend returned code ${error.status}, body was:`, error.error);
-      }
-      return throwError(() => new Error('Something bad happened; please try again later.'));
-    }*/
 }
  

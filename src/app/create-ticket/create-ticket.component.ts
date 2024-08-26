@@ -67,7 +67,7 @@ export class CreateTicketComponent {
 
   updatePreviewPosition(event: MouseEvent) {
     if (this.previewFile) {
-      this.previewX = event.clientX +10; // 10px de décalage par rapport au curseur
+      this.previewX = event.clientX +10;
       this.previewY = event.clientY +10;
     }
   }
@@ -114,7 +114,7 @@ export class CreateTicketComponent {
 
     this.jiraService.createIssue(issueData).subscribe({
       next: (response) => {
-        console.log('Ticket créé', response),
+        console.log('Ticket créé'),
         this.ticketCreated = true;
         if (this.attachments.length > 0) {
           this.attachFiles(response.id);
@@ -135,11 +135,17 @@ export class CreateTicketComponent {
 
   
 
+
+
+
+
   private attachFiles(issueId: string) {
     this.attachments.forEach(file => {
       this.jiraService.attachFile(issueId, file).subscribe({
         next: (response) => {console.log('Fichier attaché', response)},
-        error: (error) => {console.error('Erreur lors de l\'attachement du fichier', error)}
+        error: (error) => {
+          this.errorMessage = "La ou les pièces jointes n'ont pas étaient envoyées"
+          console.error('Erreur lors de l\'attachement du fichier', error)}
       });
     });
   }
@@ -150,7 +156,7 @@ export class CreateTicketComponent {
   }
 
   private capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase(); // + str.slice(1).toLowerCase();
+    return str.charAt(0).toUpperCase();
   }
 
   private filterNonAlphabetic(str: string): string {
