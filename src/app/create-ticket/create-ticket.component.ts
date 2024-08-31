@@ -156,7 +156,7 @@ export class CreateTicketComponent {
   }
 
   private capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase();
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   private filterNonAlphabetic(str: string): string {

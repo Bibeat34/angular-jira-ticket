@@ -1,6 +1,6 @@
 {
     "/jira-api": {
-      "target": "https://votreDomain.atlassian.net",
+      "target": "https://votreDomaine.atlassian.net",
       "secure": true, 
       "changeOrigin": true,
       "logLevel": "debug",
