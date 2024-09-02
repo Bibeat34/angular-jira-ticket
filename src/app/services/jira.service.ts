@@ -66,11 +66,27 @@ export class JiraService {
     
   addComment(issueId: string, comment: any): Observable<any> {
     const url = `${this.apiUrl}/issue/${issueId}/comment`;
+    
     return this.http.post(url, comment, { 
       headers: this.getHeaders(),
       observe: 'response'
      });
   }  
 
+  getAttachment(attachmentId: string): Observable<Blob> {
+    const url = `${this.apiUrl}/attachment/content/${attachmentId}`;
+    return this.http.get(url, {
+      headers: new HttpHeaders({
+        'Authorization': `Basic ${btoa(this.authToken)}`
+      }),
+      responseType: 'blob',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        const contentType = response.headers.get('content-type') || 'application/octet-stream';
+        return new Blob([response.body as BlobPart], { type: contentType });
+      })
+    );
+  }
 }
  
