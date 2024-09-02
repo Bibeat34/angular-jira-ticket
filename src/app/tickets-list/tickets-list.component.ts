@@ -17,9 +17,15 @@ import proxyConf from '../../../proxy.conf.json'
 export class TicketsListComponent implements OnInit, OnDestroy {
   loading = true;
   errorMessage: string | null = null;
+
+  page: number = 1;
+  issueByPage: number = 20;
+  pageMax: number = 1;
   
   issues: any[] = [];
-  sortedIssues: any[] = [];  
+  sortedIssues: any[] = [];
+  issuesToShow: any[] = [];
+  
   sortColumn: string | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
   sortEtat: 'Terminé(e)' | 'À faire' | 'Revue en cours' | 'Tous' = 'Tous'; 
@@ -38,7 +44,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadIssues();
+    this.loadAllIssues();
   }
 
   ngOnDestroy() {
@@ -49,56 +55,66 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadIssues() {
-      this.jiraService.getIssues(environment.issueType, environment.jiraProjectKey)
+  loadAllIssues() {
+    this.loading = true;
+    this.errorMessage = null;
+    this.jiraService.getAllIssues(environment.issueType, environment.jiraProjectKey)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (data) => {
-          this.issues = data.issues;
+        next: (issues) => {
+          this.issues = issues;
           this.sortedIssues = [...this.issues];
           this.sortBy('created');
+          this.pageMax = this.setPageMax();
           this.loading = false;
         },
         error: (error) => {
-          this.getErrorMessage(error.status)            
+          this.getErrorMessage(error.status);
           this.loading = false;
           console.error('Error loading issues:', error);
         }
       });
   }
 
+  issuesByPage() {
+    this.issuesToShow = [];
+    for (let i = 0; i < this.sortedIssues.length; i++) {
+      if ( i >= (this.page * this.issueByPage) - this.issueByPage  && i < this.page * this.issueByPage )
+        this.issuesToShow.push(this.sortedIssues[i])
+    }
+  }
+
+  nextPage() {
+    if( this.page >= this.pageMax) {return}    
+    else{
+      this.page++
+      this.issuesByPage()
+    }
+    
+  }
+
+  previousPage() {
+    if (this.page === 1) {return}
+    else {
+      this.page--
+       this.issuesByPage()
+    }
+  }
+
   sortBy(column: string) {
     this.sortColumn = column;
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     this.sortIssues();
-  }
- 
-  applyFilters() {
-    this.sortedIssues = this.issues.filter(issue => {
-      const nameMatch = this.sortName ? 
-        issue.fields.customfield_10067?.toLowerCase().includes(this.sortName.toLowerCase()) : 
-        true;
-      const statusMatch = this.sortEtat === 'Tous' || issue.fields.status.name === this.sortEtat;
-      return nameMatch && statusMatch;
-    });
-    
-    this.sortIssues();
-  }
+    this.issuesByPage()
+  }  
   
   onSortNameChange() {
     this.applyFilters();
+    this.page = 1;
+    this.pageMax = this.setPageMax()
+    this.issuesByPage()  
   }
   
-  printIt(issue: any): boolean {
-    if (this.sortEtat !== 'Tous' && issue.fields.status.name !== this.sortEtat) {
-      return false;
-    }
-    if (this.sortName && !issue.fields.customfield_10067) {
-      return false;
-    }
-    return true;
-  }
-
   showDescription(issue: any) {
     if(this.hoveredTicket !== issue) {
       this.hoveredTicket = issue;
@@ -143,22 +159,32 @@ export class TicketsListComponent implements OnInit, OnDestroy {
 
   
   
-  private loadTicketDescription(ticketKey: string) {
-    if (this.currentDescriptionSubscription$) {
-      this.currentDescriptionSubscription$.unsubscribe();
-    }
+ private setPageMax(): number {
+  let max = Math.floor(this.sortedIssues.length / this.issueByPage);
+  console.log("max: ", max)
+  let iss = false
+  if(this.sortedIssues.length > this.issueByPage) {iss = true}
+  console.log("iss: ",iss)
+  let chox = false 
+  if (this.sortedIssues.length % this.issueByPage != 0) {chox = true}
+  console.log(chox)
+  if (iss && chox) {
+    max += 1
+  }
+  if (max === 0) {max = 1}
+  return max;
+ }
 
-    this.currentDescriptionSubscription$ = this.jiraService.getIssue(ticketKey)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.hoveredTicketDescription = this.parseDescription(data);
-        },
-        error: (err) => {
-          console.error('Error loading ticket:', err);
-          this.hoveredTicketDescription = this.sanitizer.bypassSecurityTrustHtml('Failed to load description.');
-        }
-      });
+  private applyFilters() {
+    this.sortedIssues = this.issues.filter(issue => {
+      const nameMatch = this.sortName ? 
+        issue.fields.customfield_10067?.toLowerCase().includes(this.sortName.toLowerCase()) : 
+        true;
+      const statusMatch = this.sortEtat === 'Tous' || issue.fields.status.name === this.sortEtat;
+      return nameMatch && statusMatch;
+    });
+    
+    this.sortIssues();
   }
     
   private sortIssues() {
@@ -194,6 +220,24 @@ export class TicketsListComponent implements OnInit, OnDestroy {
               }
       return 0;
     });
+  }
+
+    private loadTicketDescription(ticketKey: string) {
+    if (this.currentDescriptionSubscription$) {
+      this.currentDescriptionSubscription$.unsubscribe();
+    }
+
+    this.currentDescriptionSubscription$ = this.jiraService.getIssue(ticketKey)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.hoveredTicketDescription = this.parseDescription(data);
+        },
+        error: (err) => {
+          console.error('Error loading ticket:', err);
+          this.hoveredTicketDescription = this.sanitizer.bypassSecurityTrustHtml('Failed to load description.');
+        }
+      });
   }
 
   private parseDescription(issueData: any): SafeHtml {

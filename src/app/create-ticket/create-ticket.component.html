@@ -72,9 +72,8 @@
               <li 
                 class="attachment-item" 
                 (mouseenter)="showPreview($event, file)" 
-                (mousemove)="updatePreviewPosition($event)"
                 (mouseleave)="hidePreview()"
-              >
+                style="position: relative;">
                 {{ file.name }}
                 <button type="button" (click)="removeFile(file)">Supprimer</button>
               </li>

@@ -43,3 +43,4 @@ Thumbs.db
 
 #Hide token
 /src/env.json
+proxy.conf.json

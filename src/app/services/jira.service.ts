@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, expand, reduce, EMPTY } from 'rxjs';
 
 import environment from '../../env.json';
 
@@ -34,12 +34,24 @@ export class JiraService {
       'Authorization': `Basic ${btoa(this.authToken)}`
     });
 
-    // Ne pas définir le Content-Type ici, laissez Angular le faire automatiquement
     return this.http.post(`${this.apiUrl}/issue/${issueId}/attachments`, formData, { 
       headers: headers,
       // Ajoutez cette option pour voir les détails de la progression
       reportProgress: true
     });
+  }
+
+  getAllIssues(issueType: string, projectKey: string): Observable<any[]> {
+    const jql = `type = "${issueType}" AND project = "${projectKey}" ORDER BY created ASC`;
+    const fields = `key,summary,status,created,customfield_${environment.champNom}`;
+
+    return this.getIssuesPage(jql, fields, 0).pipe(
+      expand(response => response.total > response.startAt + response.maxResults ?
+        this.getIssuesPage(jql, fields, response.startAt + response.maxResults) :
+        EMPTY
+      ),
+      reduce((acc, response) => [...acc, ...response.issues], [] as any[])
+    );
   }
 
   getIssues(issueType: string, projectKey: string): Observable<any> {
@@ -58,7 +70,6 @@ export class JiraService {
     return this.http.get(`${this.apiUrl}/issue/${issueKey}`, { headers: this.getHeaders() })
     .pipe(
       map(response => {
-        //console.log('Raw API response:', response);
         return response;
       })
     );
@@ -87,6 +98,19 @@ export class JiraService {
         return new Blob([response.body as BlobPart], { type: contentType });
       })
     );
+  }
+
+  private getIssuesPage(jql: string, fields: string, startAt: number): Observable<any> {
+    const params = new HttpParams()
+      .set('jql', jql)
+      .set('fields', fields)
+      .set('startAt', startAt.toString())
+      .set('maxResults', '20');  // Augmentez cette valeur si nécessaire, max 100 pour Jira Cloud
+
+    return this.http.get(`${this.apiUrl}/search`, {
+      headers: this.getHeaders(),
+      params: params
+    });
   }
 }
  

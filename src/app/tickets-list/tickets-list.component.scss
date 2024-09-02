@@ -34,6 +34,28 @@ h2 {
   }
 }
 
+.page-button {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 3rem;
+  margin-top: 4rem;
+  margin-bottom: 1rem;
+  button {
+    padding: 0.5rem 3rem;
+    background-color: #0052cc;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0043a8;
+    }
+  }
+}
+
 .filter-container {
   display: flex;
   justify-content: flex-start;

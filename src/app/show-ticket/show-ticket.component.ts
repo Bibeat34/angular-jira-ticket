@@ -45,7 +45,6 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log("unsubscribe")
     this.destroy$.next();
     this.destroy$.complete();
   }
