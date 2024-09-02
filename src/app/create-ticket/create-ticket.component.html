@@ -12,7 +12,7 @@
         <input 
           type="text" 
           id="surname" 
-          [(ngModel)]="surname" (input)="onSurnameInput($event)" 
+          [(ngModel)]="surname" 
           name="surname"
           placeholder="Entrer votre prénom" 
           required>
@@ -23,7 +23,7 @@
         <input 
           type="text" 
           id="name" 
-          [(ngModel)]="name" (input)="onNameInput($event)" 
+          [(ngModel)]="name"
           name="name" 
           placeholder="Entrer votre nom"
           required>
@@ -65,16 +65,15 @@
 
       <div>
         <label for="attachments">Pièces jointes:</label>
-        <input type="file" id="attachments" (change)="onFileSelected($event)" multiple>
+        <input type="file" id="attachments" (change)="onFileSelected($event)" #fileInput multiple>
         @if (attachments.length > 0) {
           <ul class="attachment-list">
             @for (file of attachments; track file.name) {
               <li 
                 class="attachment-item" 
                 (mouseenter)="showPreview($event, file)" 
-                (mousemove)="updatePreviewPosition($event)"
                 (mouseleave)="hidePreview()"
-              >
+                style="position: relative;">
                 {{ file.name }}
                 <button type="button" (click)="removeFile(file)">Supprimer</button>
               </li>

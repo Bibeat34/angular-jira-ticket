@@ -19,7 +19,7 @@
 
   <div class="sort-state-selection">
     <label for="sortEtat">Status :</label>
-    <select id="sortEtat" [(ngModel)]="sortEtat">
+    <select id="sortEtat" [(ngModel)]="sortEtat" (ngModelChange)="onSortNameChange()">
       <option value="Terminé(e)">Terminé</option>
       <option value="À faire">À faire</option>
       <option value="Revue en cours">Revue en cours</option>
@@ -50,8 +50,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (issue of sortedIssues; track issue.key) {
-        @if (printIt(issue)) {
+      @for (issue of issuesToShow; track issue.key) {
           <tr (click)="showTicket(issue.key)" class="clickable-row">
             <td>{{ issue.key }}</td>
             <td 
@@ -71,9 +70,13 @@
             <td>{{ formatDate(issue.fields.created) }}</td>                  
           </tr>
         }
-      }
       
     </tbody>
   </table>
+  <div class="page-button"> 
+    <button (click)="previousPage()" style="cursor: pointer;"> <- </button> 
+    <p>Page:{{ page }}/{{ pageMax }}</p>
+    <button (click)="nextPage()" style="cursor: pointer;"> -></button> 
+  </div> 
 }
 

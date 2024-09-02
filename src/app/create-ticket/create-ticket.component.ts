@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { JiraService } from '../services/jira.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -52,7 +52,7 @@ export class CreateTicketComponent {
       this.attachments = [...this.attachments, ...uniqueNewFiles];
 
       // Réinitialiser l'input file pour permettre la sélection du même fichier
-      target.value = '';
+      target.value = ``;
     }
   }
 
@@ -94,18 +94,7 @@ export class CreateTicketComponent {
     return '📎';
   }
 
-  onNameInput(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    inputElement.value = this.filterNonAlphabetic(inputElement.value);
-    this.name = this.capitalizeFirstLetter(inputElement.value);
-  }
-
-  onSurnameInput(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    inputElement.value = this.filterNonAlphabetic(inputElement.value);
-    this.surname = this.capitalizeFirstLetter(inputElement.value);
-  }
-
+  
   onSubmit() {
     if (this.isFieldError()) {return} 
     
@@ -159,14 +148,11 @@ export class CreateTicketComponent {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  private filterNonAlphabetic(str: string): string {
-    return str.replace(/[^a-zA-Z-]/g, '');
-  }
 
   private isFieldError(): boolean {
     this.errorMessage = "";
-    this.name = this.capitalizeFirstLetter(this.filterNonAlphabetic(this.name.trim()));
-    this.surname = this.capitalizeFirstLetter(this.filterNonAlphabetic(this.surname.trim()));
+    this.name = this.capitalizeFirstLetter(this.name.trim());
+    this.surname = this.capitalizeFirstLetter(this.surname.trim());
 
       if (!this.name){
         this.errorMessage = " Nom,";

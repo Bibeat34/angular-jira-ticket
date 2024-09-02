@@ -30,7 +30,7 @@
         @for (attachment of ticket.fields.attachment; track attachment.id) {
           <ul class="attachment-list">
             <li class="attachment-item">
-              <a [href]="attachment.content" target="_blank" download>
+              <a (click)="downloadAttachment(attachment.id, attachment.filename)" style="cursor: pointer;">
                 {{ attachment.filename }} ({{ formatFileSize(attachment.size) }})
               </a>
             </li>

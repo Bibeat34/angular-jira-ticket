@@ -45,7 +45,6 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log("unsubscribe")
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -110,6 +109,33 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  downloadAttachment(attachmentId: string, filename: string) {
+    console.log(`Téléchargement de la pièce jointe: ${filename} (ID: ${attachmentId})`);
+    this.jiraService.getAttachment(attachmentId).subscribe({
+      next: (blob: Blob) => {
+        console.log(`Pièce jointe reçue, taille: ${blob.size} octets, type: ${blob.type}`);
+        if (blob.size === 0) {
+          console.error('La pièce jointe reçue est vide');
+          this.errorMessage = `Erreur : La pièce jointe ${filename} est vide.`;
+          return;
+        }
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        console.log(`Téléchargement de ${filename} initié`);
+      },
+      error: (error) => {
+        console.error('Erreur lors du téléchargement de la pièce jointe:', error);
+        this.errorMessage = `Erreur lors du téléchargement de ${filename}. Veuillez réessayer.`;
+      }
+    });
   }
 
   getCommentBody(comment: any): SafeHtml {
