@@ -4,7 +4,7 @@
 </div>
 
 @if (loading) {
-  <div class="loading">Loading...</div>
+  <div class="loading">Chargement...</div>
 }@if (errorMessage) {
   <div class="error">{{ errorMessage }}</div>
 }
@@ -13,25 +13,25 @@
   <div class="ticket-details">
   <div class="ticket-details-section">
     <h2>{{ ticket.fields.summary }}</h2>
-    @if (getName(ticket.fields); as name) {
-      <p><strong>Reporter:</strong> {{ name }}</p>
+    @if (_name) {
+      <p><strong>Reporter:</strong> {{ _name }}</p>
     }@else {
       <p style="color: red;"><strong>Reporter:</strong>Pas de nom trouvé</p>
     }
-    <p><strong>Créé le:</strong> {{ formatDate(ticket.fields.created) }}</p>
+    <p><strong>Créé le:</strong> {{ _created }}</p>
     <p><strong>Statut:</strong> {{ ticket.fields.status?.name }}</p>
     <p><strong>Key:</strong> {{ ticket.key}} </p>
     <p><strong>Priorité:</strong> {{ ticket.fields.priority?.name }}</p>  
     <p><strong>Description:</strong></p>
-    <div class="description" [innerHTML]="getDescription()"></div>
+    <div class="description" [innerHTML]="_description"></div>
     @if (ticket.fields.attachment.length > 0) {
       <div class="attachments-section">
         <h3>Pièces jointes:</h3>
-        @for (attachment of ticket.fields.attachment; track attachment.id) {
+        @for (attachment of _attachments; track attachment.id) {
           <ul class="attachment-list">
             <li class="attachment-item">
               <a (click)="downloadAttachment(attachment.id, attachment.filename)" style="cursor: pointer;">
-                {{ attachment.filename }} ({{ formatFileSize(attachment.size) }})
+                {{ attachment.filename }} ({{ attachment.size }})
               </a>
             </li>
           </ul>
@@ -44,12 +44,12 @@
     <h3>Commentaires:</h3>
     @if (sortedComments.length > 0) {
       <ul class="comment-list">
-        @for (comment of sortedComments; track comment.id) {        
+        @for (comment of _comments; track comment.id) {        
           <li class="comment">
             <p class="comment-meta">
-              <strong>{{ comment.author?.displayName || 'Chargement...' }}</strong> - {{ formatDate(comment.created) }}
+              <strong>{{ comment.author || 'Chargement...' }}</strong> - {{ comment.created }}
             </p>
-            <div class="comment-body" [innerHTML]="getCommentBody(comment)"></div>
+            <div class="comment-body" [innerHTML]="comment.body"></div>
           </li>
         }
       </ul>

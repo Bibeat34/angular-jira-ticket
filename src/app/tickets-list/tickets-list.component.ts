@@ -3,7 +3,7 @@ import { JiraService } from '../services/jira.service';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil, timer } from 'rxjs';
 import environment from '../../env.json';
 import proxyConf from '../../../proxy.conf.json'
 
@@ -28,11 +28,13 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   
   sortColumn: string | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
-  sortEtat: 'Terminé(e)' | 'À faire' | 'Revue en cours' | 'Tous' = 'Tous'; 
+  sortEtat: string = 'Tous';
+  availableStatuses: string[] = ['Tous']; 
   sortName: string | null = null;
 
   hoveredTicket: SafeHtml | null = null;
   hoveredTicketDescription: SafeHtml | null = null;
+  private hoverTimer: Subscription | null = null;
   private currentDescriptionSubscription$: Subscription | null = null;
   
   private destroy$ = new Subject<void>();
@@ -53,6 +55,9 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     if (this.currentDescriptionSubscription$) {
       this.currentDescriptionSubscription$.unsubscribe();
     }
+    if (this.hoverTimer) {
+      this.hoverTimer.unsubscribe();
+    }
   }
 
   loadAllIssues() {
@@ -63,6 +68,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (issues) => {
           this.issues = issues;
+          this.extractUniqueStatuses();
           this.sortedIssues = [...this.issues];
           this.sortBy('created');
           this.pageMax = this.setPageMax();
@@ -76,6 +82,11 @@ export class TicketsListComponent implements OnInit, OnDestroy {
       });
   }
 
+  private extractUniqueStatuses() {
+    const statusSet = new Set(this.issues.map(issue => issue.fields.status.name));
+    this.availableStatuses = ['Tous', ...Array.from(statusSet).sort()];
+  }
+
   issuesByPage() {
     this.issuesToShow = [];
     for (let i = 0; i < this.sortedIssues.length; i++) {
@@ -85,21 +96,15 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   }
 
   nextPage() {
-    if( this.page >= this.pageMax) {return}    
-    else{
-      this.page++
-      this.issuesByPage()
-    }
-    
+    this.page++
+    this.issuesByPage()
   }
 
   previousPage() {
-    if (this.page === 1) {return}
-    else {
-      this.page--
-       this.issuesByPage()
-    }
+    this.page--
+    this.issuesByPage()
   }
+  
 
   sortBy(column: string) {
     this.sortColumn = column;
@@ -108,7 +113,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     this.issuesByPage()
   }  
   
-  onSortNameChange() {
+  onSortChange() {
     this.applyFilters();
     this.page = 1;
     this.pageMax = this.setPageMax()
@@ -116,14 +121,22 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   }
   
   showDescription(issue: any) {
-    if(this.hoveredTicket !== issue) {
-      this.hoveredTicket = issue;
-      this.hoveredTicketDescription = null;
-      this.loadTicketDescription(issue.key);
+    if (this.hoverTimer) {
+      this.hoverTimer.unsubscribe();
     }
+    this.hoverTimer = timer(500).subscribe(() => {
+      if (this.hoveredTicket !== issue) {
+        this.hoveredTicket = issue;
+        this.hoveredTicketDescription = null;
+        this.loadTicketDescription(issue.key);
+      }
+    });
   }
 
   hideDescription() {
+    if (this.hoverTimer) {
+      this.hoverTimer.unsubscribe();
+    }
     this.hoveredTicket = null;
     this.hoveredTicketDescription = null;
     if (this.currentDescriptionSubscription$) {
@@ -170,11 +183,12 @@ export class TicketsListComponent implements OnInit, OnDestroy {
 
   private applyFilters() {
     this.sortedIssues = this.issues.filter(issue => {
-      const nameMatch = this.sortName ? 
-        issue.fields.customfield_10067?.toLowerCase().includes(this.sortName.toLowerCase()) : 
-        true;
+      const searchTerm = this.sortName ? this.sortName.toLowerCase() : '';
+      const nameMatch = issue.fields.customfield_10067?.toLowerCase().includes(searchTerm);
+      const titleMatch = issue.fields.summary.toLowerCase().includes(searchTerm);
+      const keyMatch = issue.key.toLowerCase().includes(searchTerm);
       const statusMatch = this.sortEtat === 'Tous' || issue.fields.status.name === this.sortEtat;
-      return nameMatch && statusMatch;
+      return (nameMatch || titleMatch || keyMatch) && statusMatch;
     });
     
     this.sortIssues();

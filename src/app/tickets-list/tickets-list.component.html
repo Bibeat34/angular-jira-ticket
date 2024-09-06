@@ -7,23 +7,22 @@
 
 <div class="filter-container">
   <div class="sort-name">
-    <label for="sortName">Nom de l'auteur: </label>
+    <label for="sortName">Rechercher: </label>
     <input 
       type="text" 
       id="sortName" 
       [(ngModel)]="sortName"
-      (ngModelChange)="onSortNameChange()" 
+      (ngModelChange)="onSortChange()" 
       name="sortName"
-      placeholder="Entrer un nom">
+      placeholder="Nom, titre ou clé">
   </div>
 
   <div class="sort-state-selection">
     <label for="sortEtat">Status :</label>
-    <select id="sortEtat" [(ngModel)]="sortEtat" (ngModelChange)="onSortNameChange()">
-      <option value="Terminé(e)">Terminé</option>
-      <option value="À faire">À faire</option>
-      <option value="Revue en cours">Revue en cours</option>
-      <option value="Tous">Tous</option>
+    <select id="sortEtat" [(ngModel)]="sortEtat" (ngModelChange)="onSortChange()">
+      @for (status of availableStatuses; track status) {
+        <option [value]="status">{{ status }}</option>
+      }
     </select>
   </div>
 </div>
@@ -36,8 +35,8 @@
   <table>
     <thead>
       <tr>
-        <th>Key</th>
-        <th>Résumé</th>
+        <th>Clé</th>
+        <th>Titre</th>
         <th (click)="sortBy('reporter')" [class.sorted]="sortColumn === 'reporter'">
           Reporter @if (sortColumn === 'reporter') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>} 
         </th>
@@ -74,9 +73,9 @@
     </tbody>
   </table>
   <div class="page-button"> 
-    <button (click)="previousPage()" style="cursor: pointer;"> <- </button> 
-    <p>Page:{{ page }}/{{ pageMax }}</p>
-    <button (click)="nextPage()" style="cursor: pointer;"> -></button> 
+    <button (click)="previousPage()" [disabled]="page === 1"> ← </button> 
+    <span>Page:{{ page }}/{{ pageMax }}</span>
+    <button (click)="nextPage()" [disabled]="page === pageMax"> → </button> 
   </div> 
 }
 

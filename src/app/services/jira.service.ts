@@ -21,7 +21,6 @@ export class JiraService {
   }
 
   createIssue(issueData: any): Observable<any> {
-    //console.log('Données envoyées à Jira:', JSON.stringify(issueData, null, 2));
     return this.http.post(`${this.apiUrl}/issue`, issueData, { headers: this.getHeaders() });
   }
 
@@ -36,7 +35,6 @@ export class JiraService {
 
     return this.http.post(`${this.apiUrl}/issue/${issueId}/attachments`, formData, { 
       headers: headers,
-      // Ajoutez cette option pour voir les détails de la progression
       reportProgress: true
     });
   }
@@ -52,18 +50,6 @@ export class JiraService {
       ),
       reduce((acc, response) => [...acc, ...response.issues], [] as any[])
     );
-  }
-
-  getIssues(issueType: string, projectKey: string): Observable<any> {
-    const jql = `type = "${issueType}" AND project = "${projectKey}" ORDER BY created DESC`;
-    const params = new HttpParams()
-      .set('jql', jql)
-      .set('fields', `key,summary,status,created,customfield_${environment.champNom}`);
-      //subscribe pour essayer de récup une erreur sur le type ou la clé
-    return this.http.get(`${this.apiUrl}/search`, { 
-      headers: this.getHeaders(),
-      params: params
-    });
   }
 
   getIssue(issueKey: string): Observable<any> {
@@ -105,7 +91,7 @@ export class JiraService {
       .set('jql', jql)
       .set('fields', fields)
       .set('startAt', startAt.toString())
-      .set('maxResults', '20');  // Augmentez cette valeur si nécessaire, max 100 pour Jira Cloud
+      .set('maxResults', '100');  // Augmentez cette valeur si nécessaire, max 100 pour Jira Cloud
 
     return this.http.get(`${this.apiUrl}/search`, {
       headers: this.getHeaders(),

@@ -41,13 +41,13 @@
       </div>
       
       <div>
-        <label for="summary">Objet: </label>
+        <label for="summary">Titre: </label>
         <input 
           type="text" 
           id="summary" 
           [(ngModel)]="summary" 
           name="summary"
-          placeholder="L'objet ou résumé du ticket" 
+          placeholder="Titre du ticket" 
           required>
       </div> 
       
@@ -64,8 +64,6 @@
       </div>
 
       <div>
-        <label for="attachments">Pièces jointes:</label>
-        <input type="file" id="attachments" (change)="onFileSelected($event)" #fileInput multiple>
         @if (attachments.length > 0) {
           <ul class="attachment-list">
             @for (file of attachments; track file.name) {
@@ -79,7 +77,12 @@
               </li>
             }
           </ul>
-        }
+        } 
+
+        <label for="file-upload" class="custom-file-upload">
+          Ajouter des pièces jointes
+        </label>
+        <input id="file-upload" type="file" (change)="onFileSelected($event)" multiple style="display:none;">
       </div>
   
       @if (errorMessage) {

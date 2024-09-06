@@ -57,20 +57,23 @@ export class CreateTicketComponent {
   }
 
   removeFile(file: File) {
+    this.hidePreview();
     this.attachments = this.attachments.filter(f => f !== file);
   }
 
+
+  
   showPreview(event: MouseEvent, file: File) {
     this.previewFile = file;
     this.updatePreviewPosition(event);
   }
 
-  updatePreviewPosition(event: MouseEvent) {
+   updatePreviewPosition(event: MouseEvent) {
     if (this.previewFile) {
-      this.previewX = event.clientX +10;
-      this.previewY = event.clientY +10;
+      this.previewX = event.clientX -10;
+      this.previewY = event.clientY -10;
     }
-  }
+  } 
 
   hidePreview() {
     this.previewFile = null;
@@ -96,14 +99,11 @@ export class CreateTicketComponent {
 
   
   onSubmit() {
-    if (this.isFieldError()) {return} 
-    
+    if (this.isFieldError()) return     
     const issueData = this.setIssueData()
-    
 
     this.jiraService.createIssue(issueData).subscribe({
       next: (response) => {
-        console.log('Ticket créé'),
         this.ticketCreated = true;
         if (this.attachments.length > 0) {
           this.attachFiles(response.id);
@@ -139,6 +139,39 @@ export class CreateTicketComponent {
     });
   }
 
+  
+  
+  private isFieldError(): boolean {
+    this.errorMessage = "";
+    this.name = this.capitalizeFirstLetter(this.name.trim());
+    this.surname = this.capitalizeFirstLetter(this.surname.trim());
+    
+    if (!this.name){
+      this.errorMessage = " Nom,";
+      
+    } if (!this.surname){
+      this.errorMessage += " Prénom,";
+      
+    } if (!this.mail.trim()){
+      this.errorMessage += " Email,";
+    } else if (!this.isValidEmail(this.mail.trim())) {
+      this.errorMessage = " Email invalide (format: adresse@mail.com)";
+      return true;
+      
+    } if (!this.summary.trim()){
+      this.errorMessage += " l'Objet,";
+      
+    } if (!this.description.trim()){
+      this.errorMessage += " la Description.";
+    }
+    
+    if(this.errorMessage) {
+      this.errorMessage = `Vous devez renseigner votre ${this.errorMessage}`
+      return true
+    }
+    return false
+  }
+  
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
@@ -147,39 +180,7 @@ export class CreateTicketComponent {
   private capitalizeFirstLetter(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
-
-
-  private isFieldError(): boolean {
-    this.errorMessage = "";
-    this.name = this.capitalizeFirstLetter(this.name.trim());
-    this.surname = this.capitalizeFirstLetter(this.surname.trim());
-
-      if (!this.name){
-        this.errorMessage = " Nom,";
-
-      } if (!this.surname){
-        this.errorMessage += " Prénom,";
-
-      } if (!this.mail.trim()){
-        this.errorMessage += " Email,";
-      } else if (!this.isValidEmail(this.mail.trim())) {
-        this.errorMessage = " Email invalide (format: adresse@mail.com)";
-        return true;
-
-      } if (!this.summary.trim()){
-        this.errorMessage += " l'Objet,";
-
-      } if (!this.description.trim()){
-        this.errorMessage += " la Description.";
-      }
   
-      if(this.errorMessage) {
-        this.errorMessage = `Vous devez renseigner votre ${this.errorMessage}`
-        return true
-      }
-      return false
-  }
-
   private setIssueData() {
     const data = {
       fields: {
