@@ -152,7 +152,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   getName(issueFields: any): string {
     let name = issueFields[`customfield_${environment.champNom}`]
     if (!name) {
-      return ""
+      name = issueFields.creator.displayName
+      if (!name) return ""
     }
     return name
   } 

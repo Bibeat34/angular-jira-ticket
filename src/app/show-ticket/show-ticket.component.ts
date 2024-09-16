@@ -156,7 +156,8 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
   private getName(issueFields: any): string {
     let name = issueFields[`customfield_${environment.champNom}`]
     if (!name) {
-      return ""
+      name = issueFields.creator.displayName;
+      if (!name) return ""
     }
     return name
   }
