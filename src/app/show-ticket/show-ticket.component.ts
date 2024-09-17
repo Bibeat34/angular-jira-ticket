@@ -63,6 +63,7 @@ export class ShowTicketComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (data) => {
         this.ticket = data;
+        console.log(data)
         this.setData()
         this.loading = false;
       },

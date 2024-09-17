@@ -82,10 +82,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
       });
   }
 
-  private extractUniqueStatuses() {
-    const statusSet = new Set(this.issues.map(issue => issue.fields.status.name));
-    this.availableStatuses = ['Tous', ...Array.from(statusSet).sort()];
-  }
+  
 
   issuesByPage() {
     this.issuesToShow = [];
@@ -170,7 +167,10 @@ export class TicketsListComponent implements OnInit, OnDestroy {
 
 
 
-
+private extractUniqueStatuses() {
+    const statusSet = new Set(this.issues.map(issue => issue.fields.status.name));
+    this.availableStatuses = ['Tous', ...Array.from(statusSet).sort()];
+  }
   
   
  private setPageMax(): number {
@@ -185,7 +185,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   private applyFilters() {
     this.sortedIssues = this.issues.filter(issue => {
       const searchTerm = this.sortName ? this.sortName.toLowerCase() : '';
-      const nameMatch = issue.fields.customfield_10067?.toLowerCase().includes(searchTerm);
+      const nameMatch = this.getName(issue.fields)?.toLowerCase().includes(searchTerm);
       const titleMatch = issue.fields.summary.toLowerCase().includes(searchTerm);
       const keyMatch = issue.key.toLowerCase().includes(searchTerm);
       const statusMatch = this.sortEtat === 'Tous' || issue.fields.status.name === this.sortEtat;
@@ -205,8 +205,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
       
       switch (column) {
         case 'reporter':
-          valueA = (a.fields.customfield_10067 || '').toUpperCase();
-          valueB = (b.fields.customfield_10067 || '').toUpperCase();
+          valueA = this.getName(a.fields).toUpperCase();
+          valueB = this.getName(b.fields).toUpperCase();
           break;
           case 'status':
             valueA = a.fields.status.name;

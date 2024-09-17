@@ -218,9 +218,9 @@ export class CreateTicketComponent {
     this.errorMessage = "Une erreur est survenue lors de la création du ticket.";
 
     if (errNum === 404)
-      this.errorMessage += `  Il il a peut-être une erreur dans l'Url du proxy : ${proxyConf['/jira-api'].target}.`  
+      this.errorMessage += `  Il y a peut-être une erreur dans l'Url du proxy : ${proxyConf['/jira-api'].target}.`  
     if (errNum === 400)
-      this.errorMessage += `  Il il a peut-être une erreur dans l'id d'un des champs perso.`  
+      this.errorMessage += `  Il y a peut-être une erreur dans l'id d'un des champs perso.`  
     if (errNum === 401){
       this.errorMessage += ` Il y a peut-être une erreur dans le mail "${environment.jiraMail}" ou dans le jeton d'API.`
     }
