@@ -38,7 +38,7 @@
         <th>Clé</th>
         <th>Titre</th>
         <th (click)="sortBy('reporter')" [class.sorted]="sortColumn === 'reporter'">
-          Reporter @if (sortColumn === 'reporter') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>} 
+          Auteur @if (sortColumn === 'reporter') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>} 
         </th>
         <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
           Status @if (sortColumn === 'status') {<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>} 
