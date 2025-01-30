@@ -1,0 +1,84 @@
+@if (!requestSubmitted) {
+  <div class="fixed-button">
+    <button routerLink="">Revenir au menu</button>
+  </div>
+
+  <div class="content">
+    <h1>Demande de rappel</h1>
+  
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <label for="surname">Prénom: <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="surname" 
+          [(ngModel)]="surname"
+          name="surname"
+          placeholder="Entrer votre prénom" 
+          required>
+      </div>
+
+      <div>
+        <label for="name">Nom: <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="name"
+          [(ngModel)]="name"
+          name="name" 
+          placeholder="Entrer votre nom"
+          required>
+      </div>    
+      
+      <div>
+        <label for="phone">Numéro de téléphone: <span class="required">*</span></label>
+        <input 
+          type="tel" 
+          id="phone" 
+          [(ngModel)]="phone"
+          name="phone" 
+          placeholder="0634152849 / +33648754956"
+          required>
+      </div>
+
+      <div>
+        <label for="departement">Votre département (n°) ou région (nom) : </label>
+        <input 
+          type="text" 
+          id="departement" 
+          [(ngModel)]="departement"
+          name="departement" 
+          placeholder="69 / Rhône">
+      </div>
+      
+      <div>
+        <label for="summary">Résumé de votre besoin:</label>
+        <textarea 
+          id="summary" 
+          [(ngModel)]="summary"
+          name="summary" 
+          rows="3"
+          placeholder="Décrivez brièvement votre besoin">
+        </textarea>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+      
+      <button 
+        type="submit">
+        Je souhaite être rappelé
+      </button>
+    </form>    
+  </div>
+}
+
+@if (requestSubmitted) {
+  <div class="success-message">
+    <h2>Demande envoyée avec succès !</h2>
+    <p>Nous vous recontacterons dans les plus brefs délais.</p>
+    <button routerLink="">Revenir au menu</button>
+  </div>
+}
