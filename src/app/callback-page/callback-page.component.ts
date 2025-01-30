@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { DepartmentService } from '../services/department.service';
+import { Department } from '../data/french-departments';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+
 
 @Component({
   selector: 'app-callback-page',
@@ -21,8 +25,46 @@ export class CallbackPageComponent {
   errorMessage: string = '';
   requestSubmitted: boolean = false;
 
-  constructor() { }
+  filteredDepartments: Department[] = [];
+  showDepartmentsList: boolean = false;
+  private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
 
+  constructor(private departmentService: DepartmentService) { }
+
+  ngOnInit() {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      if (value) {
+        this.departmentService.searchDepartments(value)
+          .subscribe(departments => {
+            this.filteredDepartments = departments;
+            this.showDepartmentsList = true;
+          });
+      } else {
+        this.filteredDepartments = [];
+        this.showDepartmentsList = false;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  onDepartmentInput(event: any) {
+    this.searchSubject.next(event.target.value);
+  }
+
+  selectDepartment(department: Department) {
+    this.departement = `${department.code} - ${department.name}`;
+    this.showDepartmentsList = false;
+  }
+  
   onSubmit() {
     if (this.isFieldError()) return;
     
@@ -32,8 +74,8 @@ export class CallbackPageComponent {
       nom: this.name,
       prenom: this.surname,
       telephone: this.phone,
-      departement: this.departement,
-      resume: this.summary
+      departement: this.departement  || undefined,
+      resume: this.summary  || undefined
     });
 
     this.requestSubmitted = true;

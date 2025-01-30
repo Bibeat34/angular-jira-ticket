@@ -72,6 +72,38 @@ form {
       cursor: not-allowed;
     }
   }
+
+  .department-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .department-input-container {
+    position: relative;
+  }
+  
+  .departments-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .department-item {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .department-item:hover {
+    background-color: #f5f5f5;
+  }
 }
 
 button[routerLink] {
@@ -109,4 +141,6 @@ button[routerLink] {
     color: #505f79;
     margin-bottom: 2rem;
   }
+
+
 }

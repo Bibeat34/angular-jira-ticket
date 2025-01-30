@@ -40,14 +40,29 @@
           required>
       </div>
 
-      <div>
+      <div class="department-container">
         <label for="departement">Votre département (n°) ou région (nom) : </label>
-        <input 
-          type="text" 
-          id="departement" 
-          [(ngModel)]="departement"
-          name="departement" 
-          placeholder="69 / Rhône">
+        <div class="department-input-container">
+          <input 
+            type="text" 
+            id="departement" 
+            [(ngModel)]="departement"
+            name="departement" 
+            (input)="onDepartmentInput($event)"
+            placeholder="69 / Rhône"
+            autocomplete="off">
+          @if (showDepartmentsList && filteredDepartments.length > 0) {
+            <div class="departments-list">
+              @for (dept of filteredDepartments; track dept.code) {
+                <div 
+                  class="department-item" 
+                  (click)="selectDepartment(dept)">
+                  {{dept.code}} - {{dept.name}}
+                </div>
+              }
+            </div>
+          }
+        </div>
       </div>
       
       <div>
