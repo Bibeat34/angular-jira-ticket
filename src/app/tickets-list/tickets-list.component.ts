@@ -290,8 +290,8 @@ private extractUniqueStatuses() {
           if (errorStatus === 400){
             this.errorMessage += ` Il y a peut-être une erreur dans:
                              le mail "${environment.jiraMail}",
-                             la clé du projet "${environment.jiraMail}",
-                             le type de ticket "${environment.jiraMail}"
+                             la clé du projet "${environment.jiraProjectKey}",
+                             le type de ticket "${environment.issueType}"
                              ou dans le jeton d'API.`
           }
   }
