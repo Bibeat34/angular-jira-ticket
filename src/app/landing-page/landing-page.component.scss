@@ -3,10 +3,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   text-align: center;
   box-sizing: border-box;
+  padding: 2rem;
 
   h1 {
     margin-bottom: 1.5rem;
@@ -28,40 +29,99 @@
     display: flex;
     flex-direction: row;
     gap: 1.5rem;
+    position: relative;
 
-    button {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    .button-container {
+      position: relative;
+      width: 200px;
 
-      &:first-child {
+      button {
+        width: 100%;
+        height: 50px; 
+        padding: 0 1.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center; 
+
+        &:hover {
+          transform: translateY(-2px);
+        }
+
+        &:active {
+          transform: translateY(1px);
+        }
+      }
+
+      &:first-child button {
         background-color: #007bff;
         color: white;
 
         &:hover {
           background-color: #0056b3;
-          transform: translateY(-2px);
         }
       }
 
-      &:last-child {
+      &:nth-child(2) button {
+        background-color: #007bff;
+        color: white;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+
+      &:last-child button {
         background-color: white;
         color: #007bff;
         border: 2px solid #007bff;
 
         &:hover {
-          background-color: #007bff;
+          background-color: #0056b3;
           color: white;
-          transform: translateY(-2px);
         }
       }
 
-      &:active {
-        transform: translateY(1px);
+      .hover-text {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        color: #34495e;
+        font-size: 0.9rem;
+        font-weight: bold;
+        background-color: rgba(240, 240, 240, 0.98);
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 10;
+        pointer-events: none;
+        
+        &.visible {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        &:before {
+          content: '';
+          position: absolute;
+          top: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-bottom: 8px solid rgba(255, 255, 255, 0.95);
+        }
       }
     }
   }
@@ -81,11 +141,16 @@
       flex-direction: column;
       width: 100%;
       max-width: 300px;
+      gap: 2rem;
 
-      button {
+      .button-container {
         width: 100%;
+
+        .hover-text {
+          width: 90%;
+          margin-top: 0.75rem;
+        }
       }
     }
   }
 }
-

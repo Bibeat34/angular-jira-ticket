@@ -1,11 +1,42 @@
 
 <div class="landing-block">
     <h1>Bienvenue sur JiMiniC</h1>
-    <p>Cette application vous permet de signaler un incident et de suivre l'avancée du traitement de ces incidents par l'équipe informatique</p>
+    <p>Cette application vous permet d'échanger avec l'équipe de support informatique/métier de l'application.</p>
     <div class="landing-link">
-        <button routerLink="create-ticket">Créer un ticket</button>
-        <button routerLink="ticket-list">Voir les tickets</button>
-
+        <div class="button-container">
+            <button 
+                routerLink="quick-assistance" 
+                (mouseenter)="showHoverText('callback')"
+                (mouseleave)="clearHoverText()">
+                Je souhaite être rappelé
+            </button>
+            <div class="hover-text" [class.visible]="hoveredButton === 'callback'">
+                {{ getHoverText('callback') }}
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button 
+                routerLink="create-ticket"
+                (mouseenter)="showHoverText('create')"
+                (mouseleave)="clearHoverText()">
+                Créer un ticket
+            </button>
+            <div class="hover-text" [class.visible]="hoveredButton === 'create'">
+                {{ getHoverText('create') }}
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button 
+                routerLink="ticket-list"
+                (mouseenter)="showHoverText('list')"
+                (mouseleave)="clearHoverText()">
+                Voir les tickets
+            </button>
+            <div class="hover-text" [class.visible]="hoveredButton === 'list'">
+                {{ getHoverText('list') }}
+            </div>
+        </div>
     </div>
-
 </div>
