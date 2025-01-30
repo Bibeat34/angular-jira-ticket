@@ -35,6 +35,9 @@ form {
 
     label {
       font-weight: bold;
+      .required {
+        color: red;
+      }
     }
 
     input, textarea {
