@@ -159,7 +159,7 @@ export class CreateTicketComponent {
       return true;
       
     } if (!this.summary.trim()){
-      this.errorMessage += " l'Objet,";
+      this.errorMessage += " Titre,";
       
     } if (!this.description.trim()){
       this.errorMessage += " la Description.";
@@ -225,7 +225,7 @@ export class CreateTicketComponent {
       this.errorMessage += ` Il y a peut-être une erreur dans le mail "${environment.jiraMail}" ou dans le jeton d'API.`
     }
     if (errNum === 403){
-      this.errorMessage += `Il y a un problème avec les packages. Aller dans l'invite de commandes, placez-vous à la racine et entrer "npm install"`
+      this.errorMessage += ` Il y a un problème avec les packages. Aller dans l'invite de commandes, placez-vous à la racine et entrer "npm install".`
     }
   }
 }
