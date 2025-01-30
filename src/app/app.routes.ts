@@ -3,6 +3,8 @@ import { CreateTicketComponent } from './create-ticket/create-ticket.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { TicketsListComponent } from './tickets-list/tickets-list.component';
 import { ShowTicketComponent } from './show-ticket/show-ticket.component';
+import { CallbackPageComponent } from './callback-page/callback-page.component';
+
 
 export const routes: Routes = [
     {
@@ -12,6 +14,10 @@ export const routes: Routes = [
     {
       path: 'create-ticket',
       component: CreateTicketComponent 
+    },
+    {
+      path: 'quick-assistance',
+      component: CallbackPageComponent
     },
     {
       path: 'ticket-list',
