@@ -1,4 +1,4 @@
-@if (!requestSubmitted) {
+@if (!ticketCreated) {
   <div class="fixed-button">
     <button routerLink="">Revenir au menu</button>
   </div>
@@ -90,7 +90,7 @@
   </div>
 }
 
-@if (requestSubmitted) {
+@if (ticketCreated) {
   <div class="success-message">
     <h2>Demande envoyée avec succès !</h2>
     <p>Nous vous recontacterons dans les plus brefs délais.</p>

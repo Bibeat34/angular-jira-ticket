@@ -4,6 +4,9 @@ import { RouterLink } from '@angular/router';
 import { DepartmentService } from '../services/department.service';
 import { Department } from '../data/french-departments';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { JiraService } from '../services/jira.service';
+
+import environment from '../../env.json'
 
 
 @Component({
@@ -23,14 +26,14 @@ export class CallbackPageComponent {
   departement: string = '';
   summary: string = '';
   errorMessage: string = '';
-  requestSubmitted: boolean = false;
+  ticketCreated: boolean = false;
 
   filteredDepartments: Department[] = [];
   showDepartmentsList: boolean = false;
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  constructor(private departmentService: DepartmentService) { }
+  constructor(private departmentService: DepartmentService, private jiraService: JiraService,) { }
 
   ngOnInit() {
     this.searchSubject.pipe(
@@ -44,32 +47,21 @@ export class CallbackPageComponent {
             this.filteredDepartments = departments;
             this.showDepartmentsList = true;
           });
-      } else {
-        this.filteredDepartments = [];
+        } else {
+          this.filteredDepartments = [];
         this.showDepartmentsList = false;
       }
     });
   }
-
+  
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  onDepartmentInput(event: any) {
-    this.searchSubject.next(event.target.value);
-  }
-
-  selectDepartment(department: Department) {
-    this.departement = `${department.code} - ${department.name}`;
-    this.showDepartmentsList = false;
-  }
-  
   onSubmit() {
     if (this.isFieldError()) return;
-    
-    // Ici, vous pourriez ajouter un service pour envoyer les données
-    // par exemple vers une API ou un système de gestion des rappels
+
     console.log('Demande de rappel soumise:', {
       nom: this.name,
       prenom: this.surname,
@@ -78,9 +70,32 @@ export class CallbackPageComponent {
       resume: this.summary  || undefined
     });
 
-    this.requestSubmitted = true;
-  }
+    const issueData = this.setIssueData()
 
+    this.jiraService.createIssue(issueData).subscribe({
+      next: (response) => {
+        this.ticketCreated = true;
+        
+      },  
+      error: (error) => {        
+        console.error('Erreur', error);
+        if (error.error && error.error.errors) {
+          console.error("Détails de l'erreur:", error.error.errors);
+        }
+      }
+    });
+    
+  }
+  
+  onDepartmentInput(event: any) {
+    this.searchSubject.next(event.target.value);
+  }
+  
+  selectDepartment(department: Department) {
+    this.departement = `${department.code} - ${department.name}`;
+    this.showDepartmentsList = false;
+  }  
+  
   private isFieldError(): boolean {
     this.errorMessage = '';
     this.name = this.capitalizeFirstLetter(this.name.trim());
@@ -115,4 +130,36 @@ export class CallbackPageComponent {
   private capitalizeFirstLetter(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+
+  private setIssueData() {
+    const data = {
+      fields: {
+        project: {
+          key: environment.jiraProjectKey
+        },
+        [`customfield_${environment.champNom}`] : this.name + " " + this.surname,
+        [`customfield_${environment.champTelephone}`]: this.phone,
+        summary: "Demande de Rappel",
+        description: {
+          type: "doc",
+          version: 1,
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: this.summary.trim(),
+                }
+              ]
+            }
+          ]
+        },
+        issuetype: {
+          name: environment.issueRappel
+        }
+      }
+    }
+    return data
+  }  
 }

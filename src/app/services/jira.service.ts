@@ -40,7 +40,7 @@ export class JiraService {
   }
 
   getAllIssues(issueType: string, projectKey: string): Observable<any[]> {
-    const jql = `type = "${issueType}" AND project = "${projectKey}" ORDER BY created ASC`;
+    const jql = `type IN (${issueType}) AND project = "${projectKey}" ORDER BY created ASC`;
     const fields = `key,summary,status,created,customfield_${environment.champNom}, creator`;
 
     return this.getIssuesPage(jql, fields, 0).pipe(

@@ -63,7 +63,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   loadAllIssues() {
     this.loading = true;
     this.errorMessage = null;
-    this.jiraService.getAllIssues(environment.issueType, environment.jiraProjectKey)
+    let allTypes : string = `'${environment.issueRappel}','${environment.issueIncidents}'`;
+    this.jiraService.getAllIssues(allTypes, environment.jiraProjectKey)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (issues) => {
@@ -291,7 +292,7 @@ private extractUniqueStatuses() {
             this.errorMessage += ` Il y a peut-être une erreur dans:
                              le mail "${environment.jiraMail}",
                              la clé du projet "${environment.jiraProjectKey}",
-                             le type de ticket "${environment.issueType}"
+                             les types de ticket "${environment.issueRappel}" ou "${environment.issueIncidents}",
                              ou dans le jeton d'API.`
           }
   }

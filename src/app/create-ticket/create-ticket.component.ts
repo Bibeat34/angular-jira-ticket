@@ -206,7 +206,7 @@ export class CreateTicketComponent {
           ]
         },
         issuetype: {
-          name: environment.issueType
+          name: environment.issueIncidents
         }
       }
     }
