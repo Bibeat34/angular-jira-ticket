@@ -64,10 +64,38 @@ h2 {
   margin-bottom: 1rem;
 }
 
+/*.radio-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .radio-item {
+    input[type="radio"] {
+      display: none;
+    }
+
+    label {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: #f4f5f7;
+      border: 1px solid #dfe1e6;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input[type="radio"]:checked + label {
+      background-color: #0052cc;
+      color: white;
+      border-color: #0052cc;
+    }
+  }
+}*/
+
 .sort-name, .sort-state-selection {
   display: flex;
   align-items: center;
-}
+} 
 
 .sort-name input, .sort-state-selection select {
   margin-left: 0.5rem;
@@ -81,7 +109,6 @@ h2 {
 }
 
 .sort-state-selection {
-  margin-bottom: 1rem;
   display: flex;
   align-items: center;
 

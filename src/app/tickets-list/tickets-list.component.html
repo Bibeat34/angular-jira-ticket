@@ -6,6 +6,30 @@
 
 
 <div class="filter-container">
+  <div class="radio-group">
+    <div class="radio-item">
+      <input 
+        type="radio" 
+        id="incidents" 
+        name="radioGroup" 
+        value="incidents" 
+        [(ngModel)]="selectedOption"
+        (change)="loadAllIssues()">
+      <label for="incidents">Incidents de recette</label>
+    </div>
+  
+    <div class="radio-item">
+      <input 
+        type="radio" 
+        id="rappel" 
+        name="radioGroup" 
+        value="rappel" 
+        [(ngModel)]="selectedOption"
+        (change)="loadAllIssues()">
+      <label for="rappel">Demande de rappel</label>
+    </div>
+  </div>
+  
   <div class="sort-name">
     <label for="sortName">Rechercher: </label>
     <input 

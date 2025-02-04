@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DepartmentService } from '../services/department.service';
+import { DepartmentService, RegionService } from '../services/department.service';
 import { Department } from '../data/french-departments';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Region } from '../data/french-regions';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil, firstValueFrom } from 'rxjs';
 import { JiraService } from '../services/jira.service';
 
 import environment from '../../env.json'
@@ -28,12 +29,17 @@ export class CallbackPageComponent {
   errorMessage: string = '';
   ticketCreated: boolean = false;
 
+  selectedOption: string = 'departments';
   filteredDepartments: Department[] = [];
-  showDepartmentsList: boolean = false;
+  showList: boolean = false;
+
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  constructor(private departmentService: DepartmentService, private jiraService: JiraService,) { }
+  constructor(
+    private departmentService: DepartmentService,
+    private regionService: RegionService,
+    private jiraService: JiraService,) { }
 
   ngOnInit() {
     this.searchSubject.pipe(
@@ -42,14 +48,22 @@ export class CallbackPageComponent {
       takeUntil(this.destroy$)
     ).subscribe(value => {
       if (value) {
-        this.departmentService.searchDepartments(value)
-          .subscribe(departments => {
-            this.filteredDepartments = departments;
-            this.showDepartmentsList = true;
-          });
+        if (this.selectedOption === 'departments') {
+          this.departmentService.searchDepartments(value)
+            .subscribe(departments => {
+              this.filteredDepartments = departments;
+              this.showList = true;
+            });
+          } else {
+            this.regionService.searchRegions(value)
+              .subscribe(regions => {
+                this.filteredDepartments = regions;
+                this.showList = true;
+              });
+            }
         } else {
           this.filteredDepartments = [];
-        this.showDepartmentsList = false;
+          this.showList = false;
       }
     });
   }
@@ -59,8 +73,9 @@ export class CallbackPageComponent {
     this.destroy$.complete();
   }
 
-  onSubmit() {
-    if (this.isFieldError()) return;
+  async onSubmit() {
+    const hasError = await this.isFieldError();
+    if (hasError) return;
 
     console.log('Demande de rappel soumise:', {
       nom: this.name,
@@ -93,10 +108,21 @@ export class CallbackPageComponent {
   
   selectDepartment(department: Department) {
     this.departement = `${department.code} - ${department.name}`;
-    this.showDepartmentsList = false;
+    this.showList = false;
   }  
   
-  private isFieldError(): boolean {
+  onDepartmentBlur() {
+    // On attend un peu avant de cacher la liste pour permettre le clic sur un élément
+    console.log ("filteredDepartments.length : ", this.filteredDepartments.length)
+    setTimeout(() => {
+      this.showList = false;
+    }, 500);
+    if (this.filteredDepartments.length == 1){
+      this.departement = `${this.filteredDepartments[0].code} - ${this.filteredDepartments[0].name}`;
+    }    
+  }
+
+  private async isFieldError(): Promise<boolean> {
     this.errorMessage = '';
     this.name = this.capitalizeFirstLetter(this.name.trim());
     this.surname = this.capitalizeFirstLetter(this.surname.trim());
@@ -112,6 +138,18 @@ export class CallbackPageComponent {
     } else if (!this.isValidPhone(this.phone.trim())) {
       this.errorMessage = ' Numéro de téléphone invalide (format: 0634152849 ou +33634152849)';
       return true;
+    }
+
+    if (this.departement) {
+      const formatRegex = /^\d{2,3}\s-\s/;
+    if (!formatRegex.test(this.departement)) {
+      if(this.selectedOption === "departments" ){        
+        this.errorMessage = ' Le département n\'est pas valide';
+      } else {
+        this.errorMessage = ' La région n\'est pas valide';
+      }
+        return true;
+      }
     }
     
     if (this.errorMessage) {

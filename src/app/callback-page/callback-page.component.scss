@@ -76,6 +76,37 @@ form {
   .department-container {
     position: relative;
     margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    > label {
+      font-weight: bold;
+    }
+  }
+
+  .radio-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 0.5rem;
+    
+    .radio-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      
+      input[type="radio"] {
+        margin: 0;
+      }
+      
+      label {
+        margin: 0;
+        font-weight: normal;
+      }
+    }
   }
   
   .department-input-container {

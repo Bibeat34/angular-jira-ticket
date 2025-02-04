@@ -41,7 +41,31 @@
       </div>
 
       <div class="department-container">
-        <label for="departement">Votre département (n°) ou région (nom) : </label>
+        <label for="departement">Je travaille pour : </label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input 
+              type="radio" 
+              id="departments" 
+              name="radioGroup" 
+              value="departments" 
+              [(ngModel)]="selectedOption">
+              <!--  (change)="loadAllIssues()"-->
+            <label for="departments">Le département</label>
+          </div>
+        
+          <div class="radio-item">
+            <input 
+              type="radio" 
+              id="regions" 
+              name="radioGroup" 
+              value="regions" 
+              [(ngModel)]="selectedOption">
+            <!--  (change)="loadAllIssues()"-->
+            <label for="regions">La région</label>
+          </div>
+        </div>
+
         <div class="department-input-container">
           <input 
             type="text" 
@@ -49,9 +73,10 @@
             [(ngModel)]="departement"
             name="departement" 
             (input)="onDepartmentInput($event)"
-            placeholder="69 / Rhône"
+            (blur)="onDepartmentBlur()"
+            [placeholder]="selectedOption === 'departments' ? '69 / Rhône' : 'Auvergne-Rhône-Alpes'"
             autocomplete="off">
-          @if (showDepartmentsList && filteredDepartments.length > 0) {
+          @if (showList && filteredDepartments.length > 0) {
             <div class="departments-list">
               @for (dept of filteredDepartments; track dept.code) {
                 <div 

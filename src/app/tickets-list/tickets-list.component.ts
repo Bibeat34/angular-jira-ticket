@@ -32,6 +32,8 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   availableStatuses: string[] = ['Tous']; 
   sortName: string | null = null;
 
+  selectedOption: string = 'incidents';
+
   hoveredTicket: SafeHtml | null = null;
   hoveredTicketDescription: SafeHtml | null = null;
   private hoverTimer: Subscription | null = null;
@@ -63,14 +65,20 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   loadAllIssues() {
     this.loading = true;
     this.errorMessage = null;
-    let allTypes : string = `'${environment.issueRappel}','${environment.issueIncidents}'`;
-    this.jiraService.getAllIssues(allTypes, environment.jiraProjectKey)
+    let type : string = `'${environment.issueIncidents}'`;
+    if (this.selectedOption == "rappel")
+    {
+      type = `'${environment.issueRappel}'`;
+    }
+    this.jiraService.getAllIssues(type, environment.jiraProjectKey)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (issues) => {
           this.issues = issues;
           this.extractUniqueStatuses();
           this.sortedIssues = [...this.issues];
+          this.sortName = null;
+          this.sortEtat = "Tous";
           this.sortBy('created');
           this.pageMax = this.setPageMax();
           this.loading = false;
@@ -106,7 +114,9 @@ export class TicketsListComponent implements OnInit, OnDestroy {
 
   sortBy(column: string) {
     this.sortColumn = column;
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    if (!this.loading){
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    }    
     this.sortIssues();
     this.issuesByPage()
   }  
@@ -117,6 +127,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
     this.pageMax = this.setPageMax()
     this.issuesByPage()  
   }
+  
   
   showDescription(issue: any) {
     if (this.hoverTimer) {
