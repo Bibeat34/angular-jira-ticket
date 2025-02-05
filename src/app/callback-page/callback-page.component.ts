@@ -176,6 +176,7 @@ export class CallbackPageComponent {
           key: environment.jiraProjectKey
         },
         [`customfield_${environment.champNom}`] : this.name + " " + this.surname,
+        [`customfield_${environment.champOrigine}`] : this.departement,
         [`customfield_${environment.champTelephone}`]: this.phone,
         summary: "Demande de Rappel",
         description: {
