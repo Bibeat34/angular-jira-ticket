@@ -187,7 +187,7 @@ export class CreateTicketComponent {
         project: {
           key: environment.jiraProjectKey
         },
-        [`customfield_${environment.champNom}`] : this.name + " " + this.surname,
+        [`customfield_${environment.champNom}`] : this.surname + " " + this.name,
         [`customfield_${environment.champMail}`]: this.mail.trim(),
         summary: this.summary.trim(),
         description: {
