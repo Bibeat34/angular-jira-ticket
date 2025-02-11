@@ -8,6 +8,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil, firstValueFrom 
 import { JiraService } from '../services/jira.service';
 
 import environment from '../../env.json'
+import proxyConf from '../../../proxy.conf.json'
 
 
 @Component({
@@ -94,6 +95,7 @@ export class CallbackPageComponent {
       },  
       error: (error) => {        
         console.error('Erreur', error);
+        this.updateErrorMessage(error.status)
         if (error.error && error.error.errors) {
           console.error("Détails de l'erreur:", error.error.errors);
         }
@@ -122,6 +124,10 @@ export class CallbackPageComponent {
     }    
   }
 
+  resetDepartmentInputContainer() {
+    this.departement = "";
+  }
+
   private async isFieldError(): Promise<boolean> {
     this.errorMessage = '';
     this.name = this.capitalizeFirstLetter(this.name.trim());
@@ -135,13 +141,13 @@ export class CallbackPageComponent {
     }
     if (!this.phone.trim()) {
       this.errorMessage += ' Numéro de téléphone,';
-    } else if (!this.isValidPhone(this.phone.trim())) {
+    } else if (!this.isValidPhone(this.phone.replace(/[\s\u00A0\u2009]+/g, ''))) {
       this.errorMessage = ' Numéro de téléphone invalide (format: 0634152849 ou +33634152849)';
       return true;
     }
 
     if (this.departement) {
-      const formatRegex = /^\d{2,3}\s-\s/;
+      const formatRegex = /^(?:\d{2,3}|2[AB])\s-\s/;
     if (!formatRegex.test(this.departement)) {
       if(this.selectedOption === "departments" ){        
         this.errorMessage = ' Le département n\'est pas valide';
@@ -161,6 +167,7 @@ export class CallbackPageComponent {
 
   private isValidPhone(phone: string): boolean {
     // Accepte les formats: 0634152849 ou +33634152849
+    console.log("numéro trim : " + phone)
     const phoneRegex = /^(\+33|0)[1-9](\d{8})$/;
     return phoneRegex.test(phone);
   }
@@ -175,7 +182,7 @@ export class CallbackPageComponent {
         project: {
           key: environment.jiraProjectKey
         },
-        [`customfield_${environment.champNom}`] : this.name + " " + this.surname,
+        [`customfield_${environment.champNom}`] : this.surname + " " + this.name,
         [`customfield_${environment.champOrigine}`] : this.departement,
         [`customfield_${environment.champTelephone}`]: this.phone,
         summary: "Demande de Rappel",
@@ -201,4 +208,19 @@ export class CallbackPageComponent {
     }
     return data
   }  
+
+  private updateErrorMessage(errNum: number): void{
+    this.errorMessage = "Une erreur est survenue lors de la création du ticket.";
+
+    if (errNum === 404)
+      this.errorMessage += `  Il y a peut-être une erreur dans l'Url du proxy : ${proxyConf['/jira-api'].target}.`  
+    if (errNum === 400)
+      this.errorMessage += `  Il y a peut-être une erreur dans l'id d'un des champs perso.`  
+    if (errNum === 401){
+      this.errorMessage += ` Il y a peut-être une erreur dans le mail "${environment.jiraMail}" ou dans le jeton d'API.`
+    }
+    if (errNum === 403){
+      this.errorMessage += ` Il y a un problème avec les packages. Aller dans l'invite de commandes, placez-vous à la racine et entrer "npm install".`
+    }
+  }
 }

@@ -15,7 +15,7 @@ export class DepartmentService {
     const normalizedQuery = query.toLowerCase().trim();
     return of(this.departments).pipe(
       map(departments => departments.filter(dept => 
-        dept.code.includes(normalizedQuery) || 
+        dept.code.toLowerCase().includes(normalizedQuery) || 
         dept.name.toLowerCase().includes(normalizedQuery)
       ))
     );

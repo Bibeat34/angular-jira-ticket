@@ -49,8 +49,8 @@
               id="departments" 
               name="radioGroup" 
               value="departments" 
-              [(ngModel)]="selectedOption">
-              <!--  (change)="loadAllIssues()"-->
+              [(ngModel)]="selectedOption"
+              (change)="resetDepartmentInputContainer()">
             <label for="departments">Le département</label>
           </div>
         
@@ -60,8 +60,8 @@
               id="regions" 
               name="radioGroup" 
               value="regions" 
-              [(ngModel)]="selectedOption">
-            <!--  (change)="loadAllIssues()"-->
+              [(ngModel)]="selectedOption"
+              (change)="resetDepartmentInputContainer()">
             <label for="regions">La région</label>
           </div>
         </div>
