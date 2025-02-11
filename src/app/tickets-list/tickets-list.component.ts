@@ -27,7 +27,7 @@ export class TicketsListComponent implements OnInit, OnDestroy {
   issuesToShow: any[] = [];
   
   sortColumn: string | null = null;
-  sortDirection: 'asc' | 'desc' = 'asc';
+  sortDirection: 'asc' | 'desc' = 'desc';
   sortEtat: string = 'Tous';
   availableStatuses: string[] = ['Tous']; 
   sortName: string | null = null;
